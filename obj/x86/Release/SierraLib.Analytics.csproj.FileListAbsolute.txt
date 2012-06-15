@@ -1,0 +1,8 @@
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\x86\Release\SierraLib.Analytics.dll
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\x86\Release\SierraLib.Analytics.pdb
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\x86\Release\SierraLib.Databases.dll
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\x86\Release\SierraLib.Databases.pdb
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Release\SierraLib.Analytics.dll
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Release\SierraLib.Analytics.pdb
+C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\x86\Release\MySql.Data.dll
