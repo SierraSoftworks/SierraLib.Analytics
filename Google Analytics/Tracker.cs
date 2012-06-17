@@ -160,7 +160,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
         private int dispatchPeriod = 0;
         /// <summary>
         /// Gets or Sets the dispatch period, or the amount of time between
-        /// dispatches.
+        /// dispatches in seconds.
         /// </summary>
         public int DispatchPeriod
         {
