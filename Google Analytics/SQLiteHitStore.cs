@@ -277,7 +277,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
         {
             List<Event> events = new List<Event>();
 
-            RecordCollection records = database["events"].Records;
+            var records = database["events"].Records;
 
             foreach (DatabaseRecordBase record in records)
             {
@@ -304,7 +304,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                     //Load the transaction as well
                     try
                     {
-                        DatabaseRecordBase trans = database["transaction_events"][EVENT_ID, newEvent.EventID.ToString()][0];
+                        DatabaseRecordBase trans = database["transaction_events"][EVENT_ID, newEvent.EventID.ToString()].First();
 
                         newEvent.Transaction = new Transaction(
                                 trans[ORDER_ID].ToString(),
@@ -325,7 +325,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                     //Load item
                     try
                     {
-                        DatabaseRecordBase item = database["item_events"][EVENT_ID, newEvent.EventID.ToString()][0];
+                        DatabaseRecordBase item = database["item_events"][EVENT_ID, newEvent.EventID.ToString()].First();
 
                         newEvent.Item = new Item(
                                 item[ORDER_ID].ToString(),
@@ -365,7 +365,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
 
             try
             {
-                RecordCollection records = database["hits"].Records;
+                var records = database["hits"].Records;
 
                 foreach (DatabaseRecordBase record in records)
                 {
@@ -385,10 +385,10 @@ namespace SierraLib.Analytics.GoogleAnalytics
 
         public void RemoveHit(long hitID)
         {
-            RecordCollection collection = database["hits"][HIT_ID, hitID.ToString()];
-            if(collection == null || collection.Count == 0)
+            var collection = database["hits"][HIT_ID, hitID.ToString()];
+            if(!collection.HasRecords())
                 Debug.WriteLine("Failed to find hit in database: " + hitID);
-            else if(!database["hits"].RemoveRecord(collection[0]))
+            else if(!database["hits"].RemoveRecord(collection.First()))
                 Debug.WriteLine("Failed to remove hit from database: " + hitID);
         }
 
@@ -442,8 +442,8 @@ namespace SierraLib.Analytics.GoogleAnalytics
                 Debug.WriteLine("Attempting to load existing session");
             try
             {
-                RecordCollection records = database["session"].Records;
-                if (records == null || records.Count == 0)
+                var records = database["session"].Records;
+                if (!records.HasRecords())
                 {
                     sessionStarted = false;
                     UseStoredVisitorVariables = false;
@@ -456,15 +456,16 @@ namespace SierraLib.Analytics.GoogleAnalytics
                     new SQLiteDatabaseField(database["session"].Columns[VISITS], 0),
                     new SQLiteDatabaseField(database["session"].Columns[STORE_ID], StoreID)
                 };
-                    database["session"].AddRecord(new SQLiteDatabaseRecord(fields));
+                    database["session"].AddRecords(new SQLiteDatabaseRecord(fields));
                 }
                 else
                 {
-                    TimestampFirst = records[0][TIMESTAMP_FIRST].ConvertTo<int>();
-                    TimestampPrevious = records[0][TIMESTAMP_PREVIOUS].ConvertTo<int>();
-                    TimestampCurrent = records[0][TIMESTAMP_CURRENT].ConvertTo<int>();
-                    VisitsCount = records[0][VISITS].ConvertTo<int>();
-                    StoreID = records[0][STORE_ID].ConvertTo<int>();
+                    var first = records.First();
+                    TimestampFirst = first[TIMESTAMP_FIRST].ConvertTo<int>();
+                    TimestampPrevious = first[TIMESTAMP_PREVIOUS].ConvertTo<int>();
+                    TimestampCurrent = first[TIMESTAMP_CURRENT].ConvertTo<int>();
+                    VisitsCount = first[VISITS].ConvertTo<int>();
+                    StoreID = first[STORE_ID].ConvertTo<int>();
                     Referrer = readCurrentReferrer();
                     sessionStarted = (TimestampFirst != 0 && (Referrer == null || Referrer.Timestamp != 0));
                 }
@@ -637,7 +638,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
 
         private CustomVariableBuffer getCustomVariables(long eventID)
         {
-            RecordCollection records = database["custom_variables"][EVENT_ID, eventID.ToString()];
+            var records = database["custom_variables"][EVENT_ID, eventID.ToString()];
 
             CustomVariableBuffer buffer = new CustomVariableBuffer();
 
@@ -691,7 +692,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                     + " VCount:" + VisitsCount + " STORE_ID:" + StoreID);
             
 
-            database["session"].AddRecord(new SQLiteDatabaseRecord(fields));
+            database["session"].AddRecords(new SQLiteDatabaseRecord(fields));
             sessionStarted = true;
         }
 
@@ -733,10 +734,10 @@ namespace SierraLib.Analytics.GoogleAnalytics
                             new SQLiteDatabaseField(database["custom_var_cache"].Columns[CUSTOMVAR_VALUE],e.CustomVariables[i].Value),
                         };
 
-                        RecordCollection records = database["custom_var_cache"][CUSTOMVAR_INDEX, e.CustomVariables[i].Index.ToString()];
-                        DatabaseRecordBase oldRecord = records != null ? records[0] : null;
+                        var records = database["custom_var_cache"][CUSTOMVAR_INDEX, e.CustomVariables[i].Index.ToString()];
+                        DatabaseRecordBase oldRecord = records != null ? records.First() : null;
                         if (oldRecord == null)
-                            database["custom_var_cache"].AddRecord(new SQLiteDatabaseRecord(fields));
+                            database["custom_var_cache"].AddRecords(new SQLiteDatabaseRecord(fields));
                         else
                             database["custom_var_cache"].UpdateRecord(oldRecord, new SQLiteDatabaseRecord(fields));
 
@@ -762,7 +763,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                 new SQLiteDatabaseField(database["hits"].Columns[HIT_TIMESTAMP], (storeHitTime ? (int)Math.Round(DateTime.Now.Subtract(new DateTime(1970,1,1)).TotalMilliseconds) : 0))
             };
 
-            database["hits"].AddRecord(new SQLiteDatabaseRecord(fields));
+            database["hits"].AddRecords(new SQLiteDatabaseRecord(fields));
         }
 
         static string formatReferrer(string referrerUrl)
@@ -815,7 +816,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                 return null;
 
 
-            DatabaseRecordBase record = database["referrer"].Records[0];
+            DatabaseRecordBase record = database["referrer"].Records.First();
 
             if (record == null)
             {
@@ -845,7 +846,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                 new SQLiteDatabaseField(database["referrer"].Columns[REFERRER_INDEX],r.Index)
             };
 
-            return database["referrer"].AddRecord(new SQLiteDatabaseRecord(fields));
+            return database["referrer"].AddRecords(new SQLiteDatabaseRecord(fields));
         }
 
         public Referrer GetAndUpdateReferrer()

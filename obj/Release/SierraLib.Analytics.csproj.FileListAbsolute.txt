@@ -14,3 +14,10 @@ D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\bin\Release\SierraLib.
 D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\ResolveAssemblyReference.cache
 D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\SierraLib.Analytics.dll
 D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\SierraLib.Analytics.pdb
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\SierraLib.Analytics.rewritten
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\Decl\SierraLib.Analytics.dll
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\Decl\SierraLib.Analytics.pdb
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\CodeContractAnalysisRun.log
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\bin\Release\CodeContracts\SierraLib.Analytics.Contracts.dll
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\bin\Release\CodeContracts\SierraLib.Analytics.Contracts.pdb
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\Release\SierraLib.Analyticsccrefgen.rsp

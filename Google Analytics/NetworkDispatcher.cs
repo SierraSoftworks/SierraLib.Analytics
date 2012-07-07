@@ -4,7 +4,10 @@ using System.Text;
 using System.Threading;
 using System.Net;
 using System.Diagnostics;
+
+#if !WINDOWS_PHONE
 using SierraLib.Analytics.NetworkInfo;
+#endif
 
 namespace SierraLib.Analytics.GoogleAnalytics
 {
@@ -50,8 +53,10 @@ namespace SierraLib.Analytics.GoogleAnalytics
             {
                 case PlatformID.Unix:
                     return "Linux";
+#if !WINDOWS_PHONE
                 case PlatformID.MacOSX:
                     return "MacOSX";
+#endif
                 case PlatformID.Win32NT:
                     return "Windows NT " + Environment.OSVersion.Version.ToString(2);
                 case PlatformID.Win32Windows:
@@ -89,6 +94,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
             dispatchBusy = true;
             exitDispatch = false;
 
+#if !WINDOWS_PHONE
             //Check whether there is an active internet connection, this only works on Vista or greater
             if (Environment.OSVersion.Version.Major >= 6)
             {
@@ -99,6 +105,7 @@ namespace SierraLib.Analytics.GoogleAnalytics
                     return;
                 }
             }
+#endif
 
             lock (lockObject)
             {
@@ -125,15 +132,32 @@ namespace SierraLib.Analytics.GoogleAnalytics
                         try
                         {
                             string result = null;
-                            if(!Tracker.CurrentInstance.DryRun)
+                            if (!Tracker.CurrentInstance.DryRun)
+#if !WINDOWS_PHONE
                                 result = client.DownloadString(requestText);
-                            
-                            if(Tracker.CurrentInstance.Debug)
+#else
+                            {
+                                AutoResetEvent areDl = new AutoResetEvent(false);
+                                client.DownloadStringCompleted += (o, e) =>
+                                    {
+                                        result = e.Result;
+                                        areDl.Set();
+                                    };
+                                client.DownloadStringAsync(new Uri(requestText));
+                            }
+
+#endif
+
+                                if (Tracker.CurrentInstance.Debug)
                             {
                                 Debug.WriteLine("Dispatched Hit [GET]:");
+#if !WINDOWS_PHONE
                                 Debug.Indent();
+#endif
                                 Debug.WriteLine(requestText);
+#if !WINDOWS_PHONE
                                 Debug.Unindent();
+#endif
 
                                 Debug.WriteLine("Received Response [GET]");
                             }
@@ -153,17 +177,37 @@ namespace SierraLib.Analytics.GoogleAnalytics
                         try
                         {
                             string result = null;
+#if !WINDOWS_PHONE
                             client.Headers.Set(HttpRequestHeader.ContentType, "text/plain");
                             if (!Tracker.CurrentInstance.DryRun)
                                 result = client.UploadString("/p", requestText);
+#else
+                            client.Headers[HttpRequestHeader.ContentType] = "text/plain";
+                            if (!Tracker.CurrentInstance.DryRun)
+                            {
+                                AutoResetEvent areUl = new AutoResetEvent(false);
+                                client.UploadStringCompleted += (o, e) =>
+                                    {
+                                        result = e.Result;
+                                        areUl.Set();
+                                    };
+                                client.UploadStringAsync(new Uri("/p"), "POST", requestText, null);
+                                areUl.WaitOne(5000);
+                            }
+#endif
+
 
                             if (Tracker.CurrentInstance.Debug)
                             {
                                 Debug.WriteLine("Dispatched Hit [POST]:");
+#if !WINDOWS_PHONE
                                 Debug.Indent();
+#endif
                                 Debug.WriteLine(requestText);
+#if !WINDOWS_PHONE
                                 Debug.Unindent();
-                                
+#endif
+
                                 Debug.WriteLine("Received Response [POST]");
                             }
 
@@ -209,16 +253,24 @@ namespace SierraLib.Analytics.GoogleAnalytics
             client = new WebClient();
             client.BaseAddress = (Tracker.CurrentInstance.UseSecureConnections ?
                                 GoogleAnalyticsSecureHostname : GoogleAnalyticsHostname);
-            client.Headers.Set(HttpRequestHeader.UserAgent, UserAgent);
+#if !WINDOWS_PHONE
+            client.Headers.Set(HttpRequestHeader.UserAgent, UserAgent);                                
+#else
+            client.Headers[HttpRequestHeader.UserAgent] = UserAgent;
+#endif
             client.Encoding = Encoding.UTF8;
 
             if (Tracker.CurrentInstance.Debug)
             {
                 Debug.WriteLine("NetworkDispatcher initialized");
-                Debug.Indent();
+#if !WINDOWS_PHONE
+                                Debug.Indent();
+#endif
                 Debug.WriteLine("Base Address: " + client.BaseAddress);
                 Debug.WriteLine("UserAgent: " + UserAgent);
-                Debug.Unindent();
+#if !WINDOWS_PHONE
+                                Debug.Unindent();
+#endif
             }
         }
 

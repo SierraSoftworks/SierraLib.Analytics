@@ -6,3 +6,6 @@ C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analy
 C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Debug\ResolveAssemblyReference.cache
 C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Debug\SierraLib.Analytics.dll
 C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\x86\Debug\SierraLib.Analytics.pdb
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\x86\Debug\SierraLib.Analytics.dll
+D:\Programming\C#\Libraries\SierraLib\SierraLib.Analytics\obj\x86\Debug\SierraLib.Analytics.pdb
