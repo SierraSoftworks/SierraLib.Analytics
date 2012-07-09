@@ -1,7 +1,0 @@
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\Release_BETA\SierraLib.Analytics.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\Release_BETA\SierraLib.Analytics.pdb
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\Release_BETA\SierraLib.Databases.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\Release_BETA\SierraLib.Databases.pdb
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\Release_BETA\ResolveAssemblyReference.cache
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\Release_BETA\SierraLib.Analytics.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\Release_BETA\SierraLib.Analytics.pdb

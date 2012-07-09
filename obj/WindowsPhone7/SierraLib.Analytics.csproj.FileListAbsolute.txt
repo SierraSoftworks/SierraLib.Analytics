@@ -1,8 +1,0 @@
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\WindowsPhone7\ResolveAssemblyReference.cache
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\WindowsPhone7\SierraLib.Analytics.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\WindowsPhone7\SierraLib.Analytics.pdb
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\WindowsPhone7\SierraLib.Databases.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\WindowsPhone7\SierraLib.Databases.pdb
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\WindowsPhone7\SierraLib.Analytics.dll
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\obj\WindowsPhone7\SierraLib.Analytics.pdb
-C:\Users\SPARTAN\Documents\Visual Studio 2010\Projects\SierraLib\SierraLib.Analytics\bin\WindowsPhone7\MySql.Data.dll
