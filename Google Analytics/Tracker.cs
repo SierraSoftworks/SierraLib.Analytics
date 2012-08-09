@@ -550,6 +550,8 @@ namespace SierraLib.Analytics.GoogleAnalytics
 
             else
             {
+                if (dispatcher == null || HitStore == null)
+                    return false;
                 dispatcher.DispatchHits(HitStore.GetHits());
                 maybeScheduleNextDispatch();
                 return true;
