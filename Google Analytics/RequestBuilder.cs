@@ -42,7 +42,9 @@ namespace SierraLib.Analytics.GoogleAnalytics
 
             str.Append("&umtcs=").Append(e.CharacterSet);
             str.Append("&utmsr=").Append(e.ScreenWidth).Append("x").Append(e.ScreenHeight);
+#if !WINDOWS_PHONE
             str.Append("&utmsc=").Append(new Microsoft.VisualBasic.Devices.Computer().Screen.BitsPerPixel + "-bit");
+#endif
             str.Append("&utmul=").Append(locale);
             str.Append("&utmp=").Append(str1);
             
