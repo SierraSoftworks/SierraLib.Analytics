@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SierraLib.Analytics")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Provides platform analytics tools for .Net applications")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SierraLib.Analytics")]
-[assembly: AssemblyCopyright("Copyright ©  2011")]
+[assembly: AssemblyCompany("Sierra Softworks")]
+[assembly: AssemblyProduct("SierraLib")]
+[assembly: AssemblyCopyright("Copyright © Sierra Softworks 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
