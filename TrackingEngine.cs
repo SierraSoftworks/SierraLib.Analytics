@@ -47,6 +47,51 @@ namespace SierraLib.Analytics
         public static TrackingEngine Default
         { get; private set; }
 
+
+        /// <summary>
+        /// Gets the <see cref="TrackingEngine"/> attached to the current item.
+        /// </summary>
+        /// <typeparam name="T">The type of the object on which the engine is attached</typeparam>
+        /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
+        /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
+        public static TrackingEngine GetEngine(Expression<Action> target)
+        {
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TrackingEngine"/> attached to the current item.
+        /// </summary>
+        /// <typeparam name="T">The type of the object on which the engine is attached</typeparam>
+        /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
+        /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
+        public static TrackingEngine GetEngine<T>(Expression<Action<T>> target)
+        {
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TrackingEngine"/> attached to the current item.
+        /// </summary>
+        /// <typeparam name="T">The type of the object on which the engine is attached</typeparam>
+        /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
+        /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
+        public static TrackingEngine GetEngine<T>(Expression<Func<T>> target)
+        {
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+        }
+        
+        /// <summary>
+        /// Gets the <see cref="TrackingEngine"/> attached to the given type.
+        /// </summary>
+        /// <typeparam name="T">The type of the object on which the engine is attached</typeparam>
+        /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
+        /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <typeparamref name="T"/>ype</returns>
+        public static TrackingEngine GetEngine<T>()
+        {
+            return typeof(T).GetCustomAttribute<TrackingEngine>(true);
+        }
+
         private static void CheckDefaultSet()
         {
             if (Default == null)
@@ -465,6 +510,17 @@ namespace SierraLib.Analytics
         #endregion
 
         #region Queue Management
+
+        JsonKeyStore _requestStore;
+        JsonKeyStore RequestStore
+        {
+            get 
+            {
+                if (_requestStore == null)
+                    _requestStore = new JsonKeyStore(Environment.ExpandEnvironmentVariables(@"%AppData%\Sierra Softworks\Analytics\PendingRequests.json"));
+                return _requestStore;
+            }
+        }
 
         private void OnRequestPrepared(PreparedTrackingRequest request)
         {
