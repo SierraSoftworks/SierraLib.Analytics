@@ -62,8 +62,12 @@ namespace SierraLib.Analytics
         public TrackingApplicationAttribute()
         {
             var a = Assembly.GetEntryAssembly();
-            Name = AssemblyInformation.GetAssemblyTitle(a);
-            Version = AssemblyInformation.GetAssemblyVersion(a).ToString(3);
+
+            if (a != null)
+            {
+                Name = AssemblyInformation.GetAssemblyTitle(a);
+                Version = AssemblyInformation.GetAssemblyVersion(a).ToString(3);
+            }
         }
 
         /// <summary>
