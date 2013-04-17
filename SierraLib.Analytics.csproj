@@ -125,6 +125,7 @@
     <Compile Include="Google\TrackingModules.cs" />
     <Compile Include="Implementation\Attributes.cs" />
     <Compile Include="Implementation\Interfaces.cs" />
+    <Compile Include="Implementation\JsonKeyStore.cs" />
     <Compile Include="Implementation\MethodInterceptionRewriting.cs" />
     <Compile Include="Google\PreparedTrackingRequest.cs" />
     <Compile Include="Google\UniversalAnalytics.cs" />
