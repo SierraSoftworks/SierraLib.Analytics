@@ -12,6 +12,13 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 
+using Akavache;
+using ReactiveUI;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Concurrency;
+using System.Diagnostics;
+
 namespace SierraLib.Analytics
 {
     /// <summary>
@@ -20,12 +27,30 @@ namespace SierraLib.Analytics
     /// </summary>
     public abstract class TrackingEngine
     {
-        public TrackingEngine()
+        static TrackingEngine()
         {
-            UserAgent = string.Format("SierraLib.Analytics/v{0}", AssemblyInformation.GetAssemblyVersion().ToString(3));
+            BlobCache.ApplicationName = @"Sierra Softworks\Analytics";
+
+            RequestQueue.Subscribe(x =>
+                Interlocked.Increment(ref ProcessingRequests));
         }
 
-        #region Static Tracking
+        public TrackingEngine()
+        {
+            UpdateUserAgent("SierraLib.Analytics", AssemblyInformation.GetAssemblyVersion().ToString(3), "UniversalAnalytics");
+            QueueLifeSpan = new TimeSpan(7, 0, 0, 0);
+            RetryInterval = new TimeSpan(0, 1, 0);
+
+            RequestQueue.Where(x => x.Engine == this).ObserveOn(TaskPoolScheduler.Default).Subscribe(ProcessRequest);
+        }
+
+        #region Storage
+
+        static readonly IBlobCache KeyStore = BlobCache.UserAccount;
+
+        #endregion
+
+        #region Engine Access
 
         /// <summary>
         /// Sets this as the default <see cref="TrackingEngine"/> used when calls are made to
@@ -80,7 +105,7 @@ namespace SierraLib.Analytics
         {
             return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
         }
-        
+
         /// <summary>
         /// Gets the <see cref="TrackingEngine"/> attached to the given type.
         /// </summary>
@@ -97,6 +122,10 @@ namespace SierraLib.Analytics
             if (Default == null)
                 throw new InvalidOperationException("You must have a tracking engine attribute present or call <TrackingEngine>.SetDefault before attempting to use this method");
         }
+
+        #endregion
+
+        #region Static Tracking
 
         /// <summary>
         /// Tracks the given <paramref name="modules"/> for the current <paramref name="application"/> using the <see cref="Default"/> <see cref="TrackingEngine"/>
@@ -196,10 +225,9 @@ namespace SierraLib.Analytics
         }
 
         #endregion
-
-
+        
         #region Standard Tracking
-
+        
         /// <summary>
         /// Tracks the given <paramref name="modules"/> for the current <paramref name="application"/> using the current <see cref="TrackingEngine"/>
         /// </summary>
@@ -217,11 +245,15 @@ namespace SierraLib.Analytics
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
         public void Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
+            //Check that we have a valid UserAgent string, if not then load a default one
+            if (UserAgent.IsNullOrWhitespace())            
+                UpdateUserAgent(application.Name, application.Version);
+            
             var request = CreateRequest(application);
             PreProcess(request);
 
             List<ITrackingFinalize> requiringFinalization = new List<ITrackingFinalize>();
-
+            
             foreach(var module in modules)
             {
                 module.PreProcess(request);
@@ -293,7 +325,7 @@ namespace SierraLib.Analytics
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
 
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
-            var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & triggerType) != 0).Concat(modules).ToArray();
+            var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => x.Filter.HasFlag(triggerType)).Concat(modules).ToArray();
 
             if (engineAttributes.Any())
                 engineAttributes.First().Engine.Track(application, dataBundle);
@@ -305,6 +337,14 @@ namespace SierraLib.Analytics
 
         #region Methods
         
+        /// <summary>
+        /// Updates the UserAgent to use the given values, making use of the standard format
+        /// and the <see cref="GetSystemInformationString"/> and <see cref="GetTrackerPlatformString"/>
+        /// functions.
+        /// </summary>
+        /// <param name="product">The name of the product for which the UserAgent is being generated</param>
+        /// <param name="version">The version of the product for which the UserAgent is being generated</param>
+        /// <param name="features">A number of possible features available within the product</param>
         public void UpdateUserAgent(string product, string version, params string[] features)
         {
             UserAgent = string.Format("{0}/{1} ({2}) {3} {4}", product, version, GetSystemInformationString(), GetTrackerPlatformString(), features.Aggregate((x,y) => x + ' ' + y));
@@ -360,6 +400,29 @@ namespace SierraLib.Analytics
             }
         }
 
+        /// <summary>
+        /// Gets or Sets the <see cref="TimeSpan"/> representing the amount of time before items which
+        /// are in the queue will be considered stale and discarded.
+        /// </summary>
+        /// <remarks>
+        /// This is useful in cases where tracking requests might not be sent immediately 
+        /// due to network connection restrictions, or because the user closed the application.
+        /// By setting this value you can help ensure that you only receive up-to-date information
+        /// and can also help keep the cache size down somewhat.
+        /// </remarks>
+        public TimeSpan QueueLifeSpan
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or Sets the <see cref="TimeSpan"/> representing the amount of time to wait between
+        /// repeated attempts to submit failed analytics requests.
+        /// </summary>
+        public static TimeSpan RetryInterval
+        { get; set; }
+
         #endregion
         
         #region Network
@@ -369,7 +432,7 @@ namespace SierraLib.Analytics
         /// Gets the <see cref="IRestClient"/> used to send requests
         /// to the tracking server.
         /// </summary>
-        public IRestClient NetworkClient
+        protected IRestClient NetworkClient
         {
             get
             {
@@ -432,7 +495,7 @@ namespace SierraLib.Analytics
         /// <param name="request">The request being used for the current tracking hit</param>
         protected virtual void PostProcess(IRestRequest request)
         {
-
+            
         }
 
         /// <summary>
@@ -445,64 +508,36 @@ namespace SierraLib.Analytics
         protected abstract PreparedTrackingRequest PrepareRequest(IRestRequest request, IEnumerable<ITrackingFinalize> finalizationQueue);
 
         #endregion
-
+        
         #region Client Identification
 
+        /// <summary>
+        /// Gets a unique identifier for this tracker instance - determined by the account it
+        /// submits its data to.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// This is used to link disk queued tracking requests to their respective engines.
+        /// </remarks>
+        protected abstract string GetTrackerID();
+
+        /// <summary>
+        /// Gets a unique identifier for the current user
+        /// </summary>
+        /// <param name="application">The application for which the client ID should be retrieved</param>
+        /// <returns>Returns the unique identifier representing the currently active user</returns>
+        /// <remarks>
+        /// Each client ID is unique to a computer, user account, <see cref="ITrackingApplication"/>, <see cref="TrackingEngine"/> and
+        /// tracker ID given by <see cref="GetTrackerID()"/> (provided that the <see cref="CreateNewClientID"/> function returns
+        /// unique values).
+        /// 
+        /// If a client ID is not found for the current combination of the above then one will be generated by making a call to
+        /// <see cref="CreateNewClientID"/>.
+        /// </remarks>
         protected string GetClientID(ITrackingApplication application)
         {
-            var storeFile = new FileInfo(Environment.ExpandEnvironmentVariables(@"%AppData%\Sierra Softworks\Analytics\Store.json"));
-            if (storeFile.Exists)
-            {
-                var deserializer = new JsonDeserializer();
-
-                var storeJSON = "";
-                using (var fileData = storeFile.OpenText())
-                    storeJSON = fileData.ReadToEnd();
-
-                var store = deserializer.Deserialize<TrackingStore>(new RestResponse() { Content = storeJSON });
-                if (store.ClientIDs.Any(x => x.Key == application.Name))
-                    return store.ClientIDs.First(x => x.Key == application.Name).Value;
-                else
-                {
-                    var newClientID = CreateNewClientID(application);
-                    store.ClientIDs.Add(new TrackingPair()
-                    {
-                        Key = application.Name,
-                        Value = newClientID
-                    });
-
-                    var serializer = new JsonSerializer();
-                    storeJSON = serializer.Serialize(store);
-
-                    storeFile.Delete();
-                    using (var file = storeFile.OpenWrite())
-                    using (var fileData = new StreamWriter(file))
-                        fileData.Write(storeJSON);
-
-                    return newClientID;
-                }
-            }
-            else
-            {
-                var store = new TrackingStore();
-
-                var newClientID = CreateNewClientID(application);
-                store.ClientIDs.Add(new TrackingPair()
-                {
-                    Key = application.Name,
-                    Value = newClientID
-                });
-
-                var serializer = new JsonSerializer();
-                var storeJSON = serializer.Serialize(store);
-
-                storeFile.Delete();
-                using (var file = storeFile.OpenWrite())
-                using (var fileData = new StreamWriter(file))
-                    fileData.Write(storeJSON);
-
-                return newClientID;
-            }
+            var clientIDKey = string.Format("{0}:{1}:{2}", this.GetType().FullName, application.Name, GetTrackerID());
+            return KeyStore.GetOrFetchObject<string>(clientIDKey, () => Task<string>.FromResult(CreateNewClientID(application))).First();
         }
 
         protected abstract string CreateNewClientID(ITrackingApplication application);
@@ -511,42 +546,80 @@ namespace SierraLib.Analytics
 
         #region Queue Management
 
-        JsonKeyStore _requestStore;
-        JsonKeyStore RequestStore
+        static readonly Subject<PreparedTrackingRequest> RequestQueue = new Subject<PreparedTrackingRequest>();
+
+        static int ProcessingRequests = 0;
+
+
+        /// <summary>
+        /// Determines whether or not the tracking engine is currently busy processing requests
+        /// </summary>
+        public static bool PendingRequests
         {
-            get 
+            get { return ProcessingRequests > 0; }
+        }
+
+        /// <summary>
+        /// Waits for any <see cref="PendingRequests"/> to complete before returning
+        /// </summary>
+        /// <param name="timeout">
+        /// The amount of time to wait for <see cref="PendingRequests"/> to process
+        /// before giving up.
+        /// </param>
+        public static void WaitForPending(TimeSpan timeout)
+        {
+            var finalTime = DateTime.Now.Add(timeout);
+            while (PendingRequests && DateTime.Now < finalTime)
+                Thread.Sleep(10);
+        }
+
+        private void ProcessRequest(PreparedTrackingRequest request)
+        {
+            foreach (var finalizer in request.RequiredFinalizations)
+                finalizer.Finalize(request.Request);
+            
+            var response = request.Engine.NetworkClient.Execute(request.Request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+                OnRequestFailed(request, response);
+            else if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                OnRequestFailed(request, response);
+            else
+                OnRequestTransmitted(request);
+
+            Interlocked.Decrement(ref ProcessingRequests);
+        }
+
+        private void OnRequestFailed(PreparedTrackingRequest request, IRestResponse response)
+        {
+            if (response.ResponseStatus != ResponseStatus.Completed)
             {
-                if (_requestStore == null)
-                    _requestStore = new JsonKeyStore(Environment.ExpandEnvironmentVariables(@"%AppData%\Sierra Softworks\Analytics\PendingRequests.json"));
-                return _requestStore;
+                Thread.Sleep(RetryInterval);
+                RequestQueue.OnNext(request); //Re-queue the item for sending
             }
+
+            Debug.WriteLine("Analytics Request Failed");
+            Debug.Indent();
+            Debug.WriteLine("{0} {1} {2}", response.ResponseStatus, (int)response.StatusCode, response.StatusCode);
+            Debug.WriteLine("{0}", response.Request.Parameters.Select(x => x.Name + "=" + x.Value).Aggregate((x, y) => x + "&" + y));
+            if (!response.Content.IsNullOrEmpty())
+                Debug.WriteLine("{0}", response.Content);
+            Debug.Unindent();
+            KeyStore.InvalidateObject<PreparedTrackingRequest>(request.RequestID.ToString());
         }
 
         private void OnRequestPrepared(PreparedTrackingRequest request)
         {
-            
+            KeyStore.InsertObject<PreparedTrackingRequest>(request.RequestID.ToString(), request, new DateTimeOffset(DateTime.Now.Add(QueueLifeSpan)));
+
+            RequestQueue.OnNext(request);
         }
 
         private void OnRequestTransmitted(PreparedTrackingRequest request)
         {
-
+            BlobCache.LocalMachine.InvalidateObject<PreparedTrackingRequest>(request.RequestID.ToString());
         }
 
         #endregion
-    }
-
-    [Serializable]
-    class TrackingStore
-    {
-        bool Enabled = true;
-        public List<TrackingPair> ClientIDs = new List<TrackingPair>();
-        public List<TrackingPair> Settings = new List<TrackingPair>();
-    }
-
-    [Serializable]
-    class TrackingPair
-    {
-        public string Key;
-        public string Value;
     }
 }
