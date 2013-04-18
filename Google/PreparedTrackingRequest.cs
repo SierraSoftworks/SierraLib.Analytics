@@ -9,6 +9,7 @@ using Imp = SierraLib.Analytics.Implementation;
 
 namespace SierraLib.Analytics.Google
 {
+    [Serializable]
     public sealed class PreparedTrackingRequest : Imp.PreparedTrackingRequest
     {
         internal PreparedTrackingRequest(UniversalAnalytics engine, IRestRequest request, 
@@ -16,6 +17,12 @@ namespace SierraLib.Analytics.Google
             : base(engine, request, requiredFinalizations)
         {
             Generated = DateTime.UtcNow;
+        }
+
+        internal PreparedTrackingRequest(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+            Generated = (DateTime)info.GetValue("Generated", typeof(DateTime));
         }
 
         /// <summary>
@@ -31,6 +38,13 @@ namespace SierraLib.Analytics.Google
 
             //Cache Buster https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#
             Request.AddParameter("z", new Random().Next());
+        }
+
+        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("Generated", Generated);
         }
     }
 }

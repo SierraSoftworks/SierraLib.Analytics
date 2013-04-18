@@ -164,6 +164,18 @@ namespace SierraLib.Analytics
             return typeof(T).GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
         }
 
+        /// <summary>
+        /// Gets the <see cref="TrackingEngine"/> which reports to the given ID (usually the account code)
+        /// </summary>
+        /// <param name="engineID">The unique ID used by the engine to identify itself</param>
+        /// <returns>Returns the engine which reports the given <paramref name="engineID"/> or <c>null</c> if no such engine was found</returns>
+        public static TrackingEngine GetEngineByID(string engineID)
+        {
+            if (!EngineCache.ContainsKey(engineID))
+                return null;
+            return EngineCache[engineID];
+        }
+
         private static void CheckDefaultSet()
         {
             if (Default == null)
@@ -678,6 +690,45 @@ namespace SierraLib.Analytics
         private void OnRequestTransmitted(PreparedTrackingRequest request)
         {
             KeyStore.Invalidate(request.RequestID.ToString());
+        }
+
+        #endregion
+
+        #region Object Implementation
+
+        /// <summary>
+        /// Determines whether or not two <see cref="TrackingEngine"/> represent the same tracker
+        /// </summary>
+        public bool Equals(TrackingEngine obj)
+        {
+            return GetTrackerID().Equals(obj.GetTrackerID());
+        }
+
+        /// <summary>
+        /// Determines whether or not two <see cref="TrackingEngine"/> represent the same tracker
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if(obj is TrackingEngine)
+                return GetTrackerID().Equals(((TrackingEngine)obj).GetTrackerID());
+            return false;
+        }
+
+        /// <summary>
+        /// Gets a unique hash for this engine instance which is determined by the
+        /// account it pushes requests to.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return GetTrackerID().GetHashCode();
+        }
+
+        /// <summary>
+        /// Returns a string representation of the current tracker
+        /// </summary>
+        public override string ToString()
+        {
+            return GetTrackerID();
         }
 
         #endregion

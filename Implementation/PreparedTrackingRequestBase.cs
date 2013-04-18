@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using RestSharp;
+using System.Runtime.Serialization;
 
 namespace SierraLib.Analytics.Implementation
 {
@@ -17,7 +18,7 @@ namespace SierraLib.Analytics.Implementation
     /// about the process of offline queuing etc.
     /// </remarks>
     [Serializable]
-    public class PreparedTrackingRequest
+    public class PreparedTrackingRequest : ISerializable
     {
         /// <summary>
         /// Creates a new <see cref="PreparedTrackingRequest"/> which performs no additional
@@ -68,5 +69,31 @@ namespace SierraLib.Analytics.Implementation
         {
 
         }
+
+        #region Serialization
+        
+        /// <summary>
+        /// Creates a <see cref="PreparedTrackingRequest"/> from a serialized <see cref="PreparedTrackingRequest"/> object.
+        /// </summary>
+        public PreparedTrackingRequest(SerializationInfo info, StreamingContext context)
+        {
+            Engine = TrackingEngine.GetEngineByID(info.GetString("Engine"));
+            RequestID = (Guid)info.GetValue("RequestID", typeof(Guid));
+            RequiredFinalizations = (IEnumerable<ITrackingFinalize>)info.GetValue("RequiredFinalizations", typeof(IEnumerable<ITrackingFinalize>));
+            Request = (IRestRequest)info.GetValue("Request", typeof(RestRequest));
+        }
+
+        /// <summary>
+        /// Serializes the current <see cref="PreparedTrackingRequest"/> object to a data stream
+        /// </summary>
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Engine", Engine.ToString());
+            info.AddValue("RequestID", RequestID);
+            info.AddValue("RequiredFinalizations", RequiredFinalizations);
+            info.AddValue("Request", Request);
+        }
+
+        #endregion
     }
 }
