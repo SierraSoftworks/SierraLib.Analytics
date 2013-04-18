@@ -24,20 +24,15 @@ namespace SierraLib.Analytics.Google
         [NotNull]
         public string TrackingID
         { get; private set; }
-
-
-
-        static Dictionary<string, TrackingEngine> EngineCache = new Dictionary<string, TrackingEngine>();
-
+        
         protected override TrackingEngine CreateEngine()
         {
-            if (EngineCache.ContainsKey(TrackingID)) return EngineCache[TrackingID];
-            else
-            {
-                var engine = new UniversalAnalytics(TrackingID);
-                EngineCache.Add(TrackingID, engine);
-                return engine;
-            }
+            return new UniversalAnalytics(TrackingID);
+        }
+
+        protected override string GetEngineID()
+        {
+            return TrackingID;
         }
     }
 

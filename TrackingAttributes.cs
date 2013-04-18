@@ -34,7 +34,22 @@ namespace SierraLib.Analytics
             
         }
         
+        /// <summary>
+        /// Used to create a new <see cref="TrackingEngine"/> instance if one hasn't yet
+        /// been created.
+        /// </summary>
+        /// <returns>
+        /// Returns a new <see cref="TrackingEngine"/> instance which will be cached for
+        /// future <see cref="TrackingEngineAttrbuteBase"/> instances.
+        /// </returns>
         protected abstract TrackingEngine CreateEngine();
+
+        /// <summary>
+        /// Gets an identifier which should be unique to each different tracking engine
+        /// configuration within your application, should give the same value as <see cref="TrackingEngine.GetEngineID"/>.
+        /// </summary>
+        /// <returns>Returns an identifier for the engine described by the current <see cref="TrackingEngineAttributeBase"/> implementation</returns>
+        protected abstract string GetEngineID();
 
 
         private TrackingEngine _engine;
@@ -46,7 +61,7 @@ namespace SierraLib.Analytics
             get
             {
                 if (_engine == null)
-                    _engine = CreateEngine();
+                    _engine = TrackingEngine.Create(GetEngineID(), x => CreateEngine());
                 return _engine;
             }
         }

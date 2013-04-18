@@ -35,8 +35,19 @@ namespace SierraLib.Analytics
                 Interlocked.Increment(ref ProcessingRequests));
         }
 
-        public TrackingEngine()
+        /// <summary>
+        /// Instantiates a <see cref="TrackingEngine"/> instance
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the user attempts to instantiate a <see cref="TrackingEngine"/> type directly
+        /// instead of making a call to <see cref="Create"/>. This is to prevent poor programming
+        /// practices and having multiple engines active at once with the same ID.
+        /// </exception>
+        protected TrackingEngine()
         {
+            if (!CreatingEngine)
+                throw new InvalidOperationException("TrackingEngine instances must be created with TrackingEngine.Create(...).");
+
             UpdateUserAgent("SierraLib.Analytics", AssemblyInformation.GetAssemblyVersion().ToString(3), "UniversalAnalytics");
             QueueLifeSpan = new TimeSpan(7, 0, 0, 0);
             RetryInterval = new TimeSpan(0, 1, 0);
@@ -47,6 +58,43 @@ namespace SierraLib.Analytics
         #region Storage
 
         static readonly IBlobCache KeyStore = BlobCache.UserAccount;
+
+        #endregion
+
+        #region Engine Caching
+
+        [NonSerialized]
+        static volatile bool CreatingEngine = false;
+        [NonSerialized]
+        static readonly object CreatingEngineLock = new object();
+        [NonSerialized]
+        static Dictionary<string, TrackingEngine> EngineCache = new Dictionary<string, TrackingEngine>();
+
+        /// <summary>
+        /// Creates a new instance of the requested <see cref="TrackingEngine"/> type or
+        /// returns an existing instance if one has already been instantiated.
+        /// </summary>
+        /// <typeparam name="TEngine">The type of <see cref="TrackingEngine"/> being instantiated</typeparam>
+        /// <param name="account">A unique ID differentiating this particular tracking engine from others, should give the same value as <see cref="TrackingEngine.GetEngineID"/></param>
+        /// <param name="initializer">A function to create a new instance of the <typeparamref name="TEngine"/> if one is not yet present</param>
+        /// <returns>Returns an instance of the requested <typeparamref name="TEngine"/></returns>
+        public static TEngine Create<TEngine>(string account, Func<string, TEngine> initializer) where TEngine : TrackingEngine
+        {
+            if (EngineCache.ContainsKey(account)) return (TEngine)EngineCache[account];
+            else
+            {
+                lock (CreatingEngineLock) //Prevent multiple threads from instantiating engines at the same time to prevent race conditions on CreatingEngine
+                {
+                    CreatingEngine = true;
+                    EngineCache.Add(account, initializer(account));
+                    CreatingEngine = false;
+                    if (Default == null)
+                        return (TEngine)(Default = EngineCache[account]);
+                    else
+                        return (TEngine)EngineCache[account];
+                }
+            }
+        }
 
         #endregion
 
@@ -71,8 +119,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public static TrackingEngine Default
         { get; private set; }
-
-
+        
         /// <summary>
         /// Gets the <see cref="TrackingEngine"/> attached to the current item.
         /// </summary>
@@ -81,7 +128,7 @@ namespace SierraLib.Analytics
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine(Expression<Action> target)
         {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
         }
 
         /// <summary>
@@ -92,7 +139,7 @@ namespace SierraLib.Analytics
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine<T>(Expression<Action<T>> target)
         {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
         }
 
         /// <summary>
@@ -103,7 +150,7 @@ namespace SierraLib.Analytics
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine<T>(Expression<Func<T>> target)
         {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngine>(true);
+            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
         }
 
         /// <summary>
@@ -114,7 +161,7 @@ namespace SierraLib.Analytics
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <typeparamref name="T"/>ype</returns>
         public static TrackingEngine GetEngine<T>()
         {
-            return typeof(T).GetCustomAttribute<TrackingEngine>(true);
+            return typeof(T).GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
         }
 
         private static void CheckDefaultSet()
@@ -547,16 +594,29 @@ namespace SierraLib.Analytics
         #region Queue Management
 
         static readonly Subject<PreparedTrackingRequest> RequestQueue = new Subject<PreparedTrackingRequest>();
-
         static int ProcessingRequests = 0;
 
 
         /// <summary>
-        /// Determines whether or not the tracking engine is currently busy processing requests
+        /// Determines whether or not the tracking engine is currently busy processing requests.
         /// </summary>
+        /// <remarks>
+        /// This property can be used to wait for the global request queue to become empty, however
+        /// it is generally easier to just call <see cref="TrackingEngine.WaitForPending"/>.
+        /// </remarks>
         public static bool PendingRequests
         {
             get { return ProcessingRequests > 0; }
+        }
+
+
+        /// <summary>
+        /// Waits for any <see cref="PendingRequests"/> to complete before returning
+        /// </summary>
+        public static void WaitForPending()
+        {
+            while (PendingRequests)
+                Thread.Sleep(10);
         }
 
         /// <summary>

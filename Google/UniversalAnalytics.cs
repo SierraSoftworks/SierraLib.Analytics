@@ -13,8 +13,11 @@ namespace SierraLib.Analytics.Google
     public sealed class UniversalAnalytics : TrackingEngine
     {
         /// <summary>
-        /// Creates a new Google Analytics tracker with the given <paramref name="trackingID"/>
+        /// Creates a new Google Analytics tracker with the given <paramref name="trackingID"/>.
+        /// You should avoid using this method directly as it doesn't provide memo-ization support
+        /// for <see cref="TrackingEngine"/> instances.
         /// </summary>
+        /// <seealso cref="TrackingEngine.Create"/>
         /// <param name="trackingID">The Tracking ID associated with the Google Analytics account where tracking data should be sent</param>
         public UniversalAnalytics(string trackingID)
         {
