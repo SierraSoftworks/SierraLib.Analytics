@@ -40,7 +40,7 @@ namespace SierraLib.Analytics.Implementation
     {
         public TrackingModuleAttributeBase()
         {
-            Filter = TrackOn.Entry;
+            Filter = TrackOn.All;
         }
 
         public abstract void PreProcess(IRestRequest request);
