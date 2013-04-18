@@ -40,6 +40,7 @@ public class TrackMe
 
 ### Tracking
 To track a request you need to make a call to the engine's `Track` method, giving it the modules you'd like to track. 
+
 ```csharp
 public void TrackMe()
 {
@@ -49,6 +50,7 @@ public void TrackMe()
 ```
 
 SierraLib.Analytics tries to encourage the use of [Attributes](http://msdn.microsoft.com/en-us/library/z0w1kczw(v=vs.80).aspx) wherever possible; using attributes helps keep your code readable and separates much of the tracking logic from your actual code logic. Now, in order to make using attributes possible, we have provided overloads for the `Track` method which use a reference to the current method to determine which modules to include.
+
 ```csharp
 [PageView]
 [Path("https://mywebsite.com")]
@@ -63,6 +65,7 @@ public void TrackMe()
 You'll notice that the `Track` method effectively creates a wrapper around the function, and if we were to run that wrapper we would be calling the function. Don't worry though, we don't call your methods twice or anything like that, we're using one of the really cool features of LINQ, something called Expressions, and it allows us to get the method that you pass there without needing you to go through the mission that is Reflection. If I've lost a few of you, don't worry - you don't need to know the workings of it to be able to use our library (but it's worth the read if you're interested).
 
 We also provide static methods which allow you to track methods without having to get the engine instance first. These work by first checking if the method (or any of its parents) has a tracking engine set and falling back on using the current default tracking engine if none could be found. You can change the current default engine if you'd like (it defaults to the first created engine) by calling `SetDefault()` on an instance of the engine which you'd like to become the default.
+
 ```csharp
 [UniversalAnalytics("UA-1234-1")]
 [PageView]
