@@ -16,6 +16,7 @@ namespace SierraLib.Analytics.Implementation
     /// tracking server, allowing the <see cref="TrackingManager"/> to worry
     /// about the process of offline queuing etc.
     /// </remarks>
+    [Serializable]
     public class PreparedTrackingRequest
     {
         /// <summary>

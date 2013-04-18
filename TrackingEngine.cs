@@ -605,19 +605,19 @@ namespace SierraLib.Analytics
             if (!response.Content.IsNullOrEmpty())
                 Debug.WriteLine("{0}", response.Content);
             Debug.Unindent();
-            KeyStore.InvalidateObject<PreparedTrackingRequest>(request.RequestID.ToString());
+            KeyStore.Invalidate(request.RequestID.ToString());
         }
 
         private void OnRequestPrepared(PreparedTrackingRequest request)
         {
-            KeyStore.InsertObject<PreparedTrackingRequest>(request.RequestID.ToString(), request, new DateTimeOffset(DateTime.Now.Add(QueueLifeSpan)));
+            KeyStore.Insert(request.RequestID.ToString(), request.Serialize(), new DateTimeOffset(DateTime.Now.Add(QueueLifeSpan)));
 
             RequestQueue.OnNext(request);
         }
 
         private void OnRequestTransmitted(PreparedTrackingRequest request)
         {
-            BlobCache.LocalMachine.InvalidateObject<PreparedTrackingRequest>(request.RequestID.ToString());
+            KeyStore.Invalidate(request.RequestID.ToString());
         }
 
         #endregion
