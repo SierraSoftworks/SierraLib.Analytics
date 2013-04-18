@@ -16,7 +16,7 @@ namespace SierraLib.Analytics
     /// Indicates that attached elements shouldn't be tracked by linked
     /// tracking engines
     /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method, Inherited = true)]
     public sealed class DontTrackAttribute : MethodDontWrapAttribute
     {
 
@@ -26,14 +26,14 @@ namespace SierraLib.Analytics
     /// Determines the <see cref="TrackingEngine"/> used to track events
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true)]
     public abstract class TrackingEngineAttributeBase : Attribute
     {
         public TrackingEngineAttributeBase()
         {
             
         }
-
+        
         protected abstract TrackingEngine CreateEngine();
 
 
@@ -56,7 +56,7 @@ namespace SierraLib.Analytics
     /// Describes the application being tracked to the <see cref="TrackingEngine"/>
     /// </summary>
     [Serializable]
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true)]
     public sealed class TrackingApplicationAttribute : Attribute, ITrackingApplication
     {
         public TrackingApplicationAttribute()
@@ -87,7 +87,7 @@ namespace SierraLib.Analytics
 
     #region Tracking Trigger Attributes
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnEntryAttribute : MethodWrapperAttribute
     {
         protected object[] Parameters { get; private set; }
@@ -104,7 +104,7 @@ namespace SierraLib.Analytics
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnExitAttribute : MethodWrapperAttribute
     {
         protected object[] Parameters { get; private set; }

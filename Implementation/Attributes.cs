@@ -8,9 +8,12 @@ using System.Text;
 
 namespace SierraLib.Analytics.Implementation
 {
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
     public abstract class TrackOnExceptionAttributeBase : MethodWrapperAttribute, ITrackingModule
     {
+        public Type ExceptionFilter
+        { get; set; }
+
         public abstract void PreProcess(IRestRequest request);
 
         protected Exception Exception { get; private set; }
@@ -18,6 +21,9 @@ namespace SierraLib.Analytics.Implementation
 
         public override void OnException(MethodBase method, Exception ex, object[] parameters)
         {
+            if (ExceptionFilter != null && !ex.GetType().IsSubclassOf(ExceptionFilter))
+                return;
+
             var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Exception) != 0).Append((ITrackingModule)this).ToArray();
@@ -29,7 +35,7 @@ namespace SierraLib.Analytics.Implementation
         }
     }
     
-    [AttributeUsage(AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true, AllowMultiple = true)]
     public abstract class TrackingModuleAttributeBase : Attribute, ITrackingModule
     {
         public TrackingModuleAttributeBase()

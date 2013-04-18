@@ -47,12 +47,15 @@ namespace SierraLib.Analytics
 
         public static T GetCustomAttribute<T>(this MemberInfo method, bool inherit = false)
         {
-            return (T)method.GetCustomAttributes(typeof(T), inherit)[0];
+            return method.GetCustomAttributes<T>(inherit).FirstOrDefault();
         }
 
         public static IEnumerable<T> GetCustomAttributes<T>(this MemberInfo method, bool inherit = false)
         {
-            return method.GetCustomAttributes(typeof(T), inherit).Cast<T>();
+            if (inherit)
+                return method.GetCustomAttributes(true).Concat(method.DeclaringType.GetCustomAttributes(true)).OfType<T>();
+            else
+                return method.GetCustomAttributes(true).OfType<T>();
         }
 
         public static TrackingEngine GetTrackingEngine(this MemberInfo method)
@@ -77,6 +80,10 @@ namespace SierraLib.Analytics
             {
                 var unaryExpression = (UnaryExpression)lambda.Body;
                 memberExpression = (MemberExpression)unaryExpression.Operand;
+            }
+            else if(lambda.Body is MethodCallExpression)
+            {
+                return ((MethodCallExpression)lambda.Body).Method;
             }
             else
             {
