@@ -49,7 +49,7 @@ public void TrackMe()
 }
 ```
 
-SierraLib.Analytics tries to encourage the use of [Attributes](http://msdn.microsoft.com/en-us/library/z0w1kczw(v=vs.80).aspx) wherever possible; using attributes helps keep your code readable and separates much of the tracking logic from your actual code logic. Now, in order to make using attributes possible, we have provided overloads for the `Track` method which use a reference to the current method to determine which modules to include.
+SierraLib.Analytics tries to encourage the use of [Attributes](http://msdn.microsoft.com/en-us/library/z0w1kczw%28v%3Dvs.80%29.aspx) wherever possible; using attributes helps keep your code readable and separates much of the tracking logic from your actual code logic. Now, in order to make using attributes possible, we have provided overloads for the `Track` method which use a reference to the current method to determine which modules to include.
 
 ```csharp
 [PageView]
