@@ -7,6 +7,9 @@ using System.Text;
 
 namespace SierraLib.Analytics.Google
 {
+    /// <summary>
+    /// Provides support for tracking application usage through Google's Universal Analytics tracking platform.
+    /// </summary>
     public sealed class UniversalAnalyticsAttribute : TrackingEngineAttributeBase
     {
         public UniversalAnalyticsAttribute(string trackingID)
@@ -14,8 +17,15 @@ namespace SierraLib.Analytics.Google
             TrackingID = trackingID;
         }
 
+        /// <summary>
+        /// Gets or Sets the Tracking ID used to associate data reported
+        /// by this application with your account. The format is UA-XXXX-Y
+        /// </summary>
+        [NotNull]
         public string TrackingID
         { get; private set; }
+
+
 
         static Dictionary<string, TrackingEngine> EngineCache = new Dictionary<string, TrackingEngine>();
 
@@ -30,6 +40,26 @@ namespace SierraLib.Analytics.Google
             }
         }
     }
+
+    #region Session Control
+
+    public sealed class StartSessionAttribute : TrackingModuleAttributeBase
+    {
+        public override void PreProcess(RestSharp.IRestRequest request)
+        {
+            request.AddParameterExclusive("sc", "start");
+        }
+    }
+
+    public sealed class EndSessionAttribute : TrackingModuleAttributeBase
+    {
+        public override void PreProcess(RestSharp.IRestRequest request)
+        {
+            request.AddParameterExclusive("sc", "end");
+        }
+    }
+
+    #endregion
 
     #region Hit Types
 
@@ -69,12 +99,29 @@ namespace SierraLib.Analytics.Google
                 request.AddParameterExclusive("ev", Value);
         }
     }
+    
+    public sealed class AppViewAttribute : TrackingModuleAttributeBase
+    {
+        public AppViewAttribute(string description)
+        {
+            Description = description;
+        }
+
+        public string Description
+        { get; set; }
+
+        public override void PreProcess(RestSharp.IRestRequest request)
+        {
+            if (!Description.IsNullOrWhitespace())
+                request.AddParameterExclusive("cd", Description.Truncate(500));
+        }
+    }
 
     public sealed class PageViewAttribute : TrackingModuleAttributeBase
     {
-        public PageViewAttribute()
+        public PageViewAttribute(string path)
         {
-            
+            Path = path;
         }
 
         public string Path

@@ -59,6 +59,11 @@ namespace SierraLib.Analytics.Google
 
         #region Tracking Engine
 
+        protected override string GetTrackerID()
+        {
+            return TrackingID;
+        }
+
         protected override Implementation.PreparedTrackingRequest PrepareRequest(RestSharp.IRestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
         {
             return new PreparedTrackingRequest(this, request, finalizationQueue);
@@ -98,11 +103,11 @@ namespace SierraLib.Analytics.Google
 
             // Document encoding
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-            request.AddParameterExclusive("de", Encoding.Default.WebName);
+            request.AddParameterExclusive("de", Encoding.Default.BodyName);
 
             // User language
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-            request.AddParameterExclusive("ul", System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName);
+            request.AddParameterExclusive("ul", System.Threading.Thread.CurrentThread.CurrentCulture.Name);
         }
 
         protected override void PostProcess(RestSharp.IRestRequest request)
