@@ -12,7 +12,7 @@ namespace SierraLib.Analytics.Google
     /// <summary>
     /// Causes a new session to be started with this tracking request
     /// </summary>
-    public sealed class GASessionStart : ITrackingModule
+    public sealed class StartSession : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
         {
@@ -23,7 +23,7 @@ namespace SierraLib.Analytics.Google
     /// <summary>
     /// Causes the current session to be terminated with this tracking request
     /// </summary>
-    public sealed class GASessionEnd : ITrackingModule
+    public sealed class EndSession : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
         {
@@ -35,9 +35,9 @@ namespace SierraLib.Analytics.Google
 
     #region Traffic Sources
 
-    public sealed class GAReferrer : ITrackingModule
+    public sealed class Referrer : ITrackingModule
     {
-        public GAReferrer(string referrer)
+        public Referrer(string referrer)
         {
             Value = referrer;
         }
@@ -51,9 +51,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GATitle : ITrackingModule
+    public sealed class Title : ITrackingModule
     {
-        public GATitle(string value)
+        public Title(string value)
         {
             Value = value;
         }
@@ -67,9 +67,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAHostName : ITrackingModule
+    public sealed class HostName : ITrackingModule
     {
-        public GAHostName(string value)
+        public HostName(string value)
         {
             Value = value;
         }
@@ -83,9 +83,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAPath : ITrackingModule
+    public sealed class Path : ITrackingModule
     {
-        public GAPath(string value)
+        public Path(string value)
         {
             Value = value;
         }
@@ -99,9 +99,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GALocationUri : ITrackingModule
+    public sealed class LocationUri : ITrackingModule
     {
-        public GALocationUri(string value)
+        public LocationUri(string value)
         {
             Value = value;
         }
@@ -115,9 +115,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GADescription : ITrackingModule
+    public sealed class Description : ITrackingModule
     {
-        public GADescription(string value)
+        public Description(string value)
         {
             Value = value;
         }
@@ -135,9 +135,9 @@ namespace SierraLib.Analytics.Google
 
     #region Campaigns
 
-    public sealed class GACampaign : ITrackingModule
+    public sealed class Campaign : ITrackingModule
     {
-        public GACampaign()
+        public Campaign()
         {
 
         }
@@ -215,9 +215,9 @@ namespace SierraLib.Analytics.Google
 
     #region Exception Management
 
-    public sealed class GAException : ITrackingModule, ITrackingPostProcess
+    public sealed class TrackedException : ITrackingModule, ITrackingPostProcess
     {
-        public GAException(Exception ex, bool fatal = true)
+        public TrackedException(Exception ex, bool fatal = true)
         {
             Exception = ex;
             Fatal = fatal;
@@ -247,7 +247,7 @@ namespace SierraLib.Analytics.Google
 
     #region Hit Types
 
-    public sealed class GAAppView : ITrackingModule
+    public sealed class AppView : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
         {
@@ -255,7 +255,7 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAPageView : ITrackingModule, ITrackingPostProcess
+    public sealed class PageView : ITrackingModule, ITrackingPostProcess
     {
         public void PreProcess(RestSharp.IRestRequest request)
         {
@@ -269,9 +269,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAEvent : ITrackingModule
+    public sealed class Event : ITrackingModule
     {
-        public GAEvent(string category = null, string action = null, string label = null, int value = 0)
+        public Event(string category = null, string action = null, string label = null, int value = 0)
         {
             Category = category;
             Action = action;
@@ -304,9 +304,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GASocial : ITrackingModule
+    public sealed class Social : ITrackingModule
     {
-        public GASocial(string socialNetwork, string action, string target)
+        public Social(string socialNetwork, string action, string target)
         {
             SocialNetwork = socialNetwork;
             Action = action;
@@ -333,9 +333,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAUserTiming : ITrackingModule
+    public sealed class UserTiming : ITrackingModule
     {
-        public GAUserTiming(string timingVariable, int milliseconds, string timingCategory = null, string timingLabel = null)
+        public UserTiming(string timingVariable, int milliseconds, string timingCategory = null, string timingLabel = null)
         {
             Category = timingCategory;
             Variable = timingVariable;
@@ -367,7 +367,7 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GANonInteractive : ITrackingModule
+    public sealed class NonInteractive : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
         {
@@ -379,9 +379,9 @@ namespace SierraLib.Analytics.Google
 
     #region Custom Dimensions
 
-    public sealed class GACustomDimension : ITrackingModule
+    public sealed class CustomDimension : ITrackingModule
     {
-        public GACustomDimension(byte index, string value)
+        public CustomDimension(byte index, string value)
         {
             Index = index;
             Value = value;
@@ -409,9 +409,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GACustomMetric : ITrackingModule
+    public sealed class CustomMetric : ITrackingModule
     {
-        public GACustomMetric(byte index, int value)
+        public CustomMetric(byte index, int value)
         {
             Index = index;
             Value = value;
@@ -442,9 +442,9 @@ namespace SierraLib.Analytics.Google
 
     #region System Information
 
-    public sealed class GAViewport : ITrackingModule
+    public sealed class Viewport : ITrackingModule
     {
-        public GAViewport(int width, int height)
+        public Viewport(int width, int height)
         {
             Width = width;
             Height = height;
