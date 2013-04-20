@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using RestSharp;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace SierraLib.Analytics.Implementation
 {
@@ -20,6 +22,11 @@ namespace SierraLib.Analytics.Implementation
     [Serializable]
     public class PreparedTrackingRequest : ISerializable
     {
+        static PreparedTrackingRequest()
+        {
+            Serializer.Error += OnSerializerError;
+        }
+
         /// <summary>
         /// Creates a new <see cref="PreparedTrackingRequest"/> which performs no additional
         /// finalization on a request object.
@@ -70,8 +77,35 @@ namespace SierraLib.Analytics.Implementation
 
         }
 
-        #region Serialization
         
+        #region Serialization
+
+        static readonly JsonSerializer Serializer = new JsonSerializer();
+
+        protected void SerializeRequest(IRestRequest request, SerializationInfo info, StreamingContext context)
+        {
+            using(var sw = new StringWriter())
+            {
+                Serializer.Serialize(sw, request);
+                info.AddValue("Request", sw.ToString());
+            }
+        }
+
+        static void OnSerializerError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs e)
+        {
+            e.ErrorContext.Handled = true;
+        }
+
+        protected IRestRequest DeserializeRequest(SerializationInfo info, StreamingContext context)
+        {
+            var request = new RestRequest();
+
+            var serialized = info.GetString("Request");
+
+            Serializer.Populate(new StringReader(serialized), request);
+            return request;
+        }
+
         /// <summary>
         /// Creates a <see cref="PreparedTrackingRequest"/> from a serialized <see cref="PreparedTrackingRequest"/> object.
         /// </summary>
@@ -80,7 +114,8 @@ namespace SierraLib.Analytics.Implementation
             Engine = TrackingEngine.GetEngineByID(info.GetString("Engine"));
             RequestID = (Guid)info.GetValue("RequestID", typeof(Guid));
             RequiredFinalizations = (IEnumerable<ITrackingFinalize>)info.GetValue("RequiredFinalizations", typeof(IEnumerable<ITrackingFinalize>));
-            Request = (IRestRequest)info.GetValue("Request", typeof(RestRequest));
+
+            Request = DeserializeRequest(info, context);
         }
 
         /// <summary>
@@ -91,7 +126,7 @@ namespace SierraLib.Analytics.Implementation
             info.AddValue("Engine", Engine.ToString());
             info.AddValue("RequestID", RequestID);
             info.AddValue("RequiredFinalizations", RequiredFinalizations);
-            info.AddValue("Request", Request);
+            SerializeRequest(Request, info, context);
         }
 
         #endregion
