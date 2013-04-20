@@ -388,7 +388,7 @@ namespace SierraLib.Analytics
         {
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
 
-            var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
+            var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication ?? new TrackingApplicationAttribute();
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => x.Filter.HasFlag(triggerType)).Concat(modules).ToArray();
 
             if (engineAttributes.Any())
