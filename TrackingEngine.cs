@@ -18,6 +18,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Concurrency;
 using System.Diagnostics;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SierraLib.Analytics
 {
@@ -51,6 +52,7 @@ namespace SierraLib.Analytics
             UpdateUserAgent("SierraLib.Analytics", AssemblyInformation.GetAssemblyVersion().ToString(3), "UniversalAnalytics");
             QueueLifeSpan = new TimeSpan(7, 0, 0, 0);
             RetryInterval = new TimeSpan(0, 1, 0);
+            Enabled = true;
 
             RequestQueue.Where(x => x.Engine == this).ObserveOn(TaskPoolScheduler.Default).Subscribe(ProcessRequest);
         }
@@ -304,6 +306,9 @@ namespace SierraLib.Analytics
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
         public void Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
+            if (!Enabled)
+                return;
+
             //Check that we have a valid UserAgent string, if not then load a default one
             if (UserAgent.IsNullOrWhitespace())            
                 UpdateUserAgent(application.Name, application.Version);
@@ -394,7 +399,7 @@ namespace SierraLib.Analytics
 
         #endregion
 
-        #region Methods
+        #region UserAgent
         
         /// <summary>
         /// Updates the UserAgent to use the given values, making use of the standard format
@@ -416,9 +421,9 @@ namespace SierraLib.Analytics
         /// <returns>System </returns>
         protected virtual string GetSystemInformationString()
         {
-            var system = "";
+            var system = "PC";
 
-            var cpuType = "";
+            var cpuType = Environment.Is64BitOperatingSystem ? "x64" : "x86";
 
             var osPlatform =    
                 (Environment.OSVersion.Platform & (PlatformID.Win32Windows | PlatformID.Win32S | PlatformID.Win32NT | PlatformID.WinCE)) != 0 ? "Windows" :
@@ -480,6 +485,17 @@ namespace SierraLib.Analytics
         /// repeated attempts to submit failed analytics requests.
         /// </summary>
         public static TimeSpan RetryInterval
+        { get; set; }
+
+        /// <summary>
+        /// Determines whether or not the current <see cref="TrackingEngine"/> will handle tracking
+        /// requests.
+        /// </summary>
+        /// <remarks>
+        /// This allows you to very easily disable tracking for a specific engine (for example, if the
+        /// user opts-out of tracking) without requiring any modifications to your code.
+        /// </remarks>
+        public bool Enabled
         { get; set; }
 
         #endregion
@@ -614,42 +630,83 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <remarks>
         /// This property can be used to wait for the global request queue to become empty, however
-        /// it is generally easier to just call <see cref="TrackingEngine.WaitForPending"/>.
+        /// it is generally easier to just call <see cref="TrackingEngine.WaitForActive"/>.
         /// </remarks>
-        public static bool PendingRequests
+        public static bool ActiveRequests
         {
             get { return ProcessingRequests > 0; }
         }
-
-
+        
         /// <summary>
-        /// Waits for any <see cref="PendingRequests"/> to complete before returning
+        /// Waits for any <see cref="ActiveRequests"/> to complete before returning
         /// </summary>
-        public static void WaitForPending()
+        public static void WaitForActive()
         {
-            while (PendingRequests)
+            while (ActiveRequests)
                 Thread.Sleep(10);
         }
 
         /// <summary>
-        /// Waits for any <see cref="PendingRequests"/> to complete before returning
+        /// Waits for any <see cref="ActiveRequests"/> to complete before returning
         /// </summary>
         /// <param name="timeout">
-        /// The amount of time to wait for <see cref="PendingRequests"/> to process
+        /// The amount of time to wait for <see cref="ActiveRequests"/> to process
         /// before giving up.
         /// </param>
-        public static void WaitForPending(TimeSpan timeout)
+        public static void WaitForActive(TimeSpan timeout)
         {
             var finalTime = DateTime.Now.Add(timeout);
-            while (PendingRequests && DateTime.Now < finalTime)
+            while (ActiveRequests && DateTime.Now < finalTime)
                 Thread.Sleep(10);
         }
 
+        /// <summary>
+        /// Loads and processes any tracking requests which were not sent
+        /// in a previous application session.
+        /// </summary>
+        /// <remarks>
+        /// This is used to transmit requests which failed to send previously and
+        /// were added to the persistent store instead. It should ideally be called
+        /// before any other tracking requests are made or when no other requests
+        /// are in the queue.
+        /// </remarks>
+        public static void ProcessStoredRequests()
+        {
+            var activeRequestQueue = RequestQueue.ToEnumerable();
+            KeyStore.GetAllKeys()
+                        .Where(x => x.StartsWith("PreparedTrackingRequest_"))
+                        .Where(x => !activeRequestQueue.Any(y => x == string.Format("PreparedTrackingRequest_", y.RequestID.ToString())))
+                        .ToObservable(TaskPoolScheduler.Default)
+                        .Select(async x => await KeyStore.GetAsync(x))
+                        .Subscribe(data =>
+                        {
+                            if (data.Status != TaskStatus.RanToCompletion)
+                            {
+                                Debug.WriteLine("Failed to deserialize request: Task was in state '{0}'", data.Status);
+                                return;
+                            }
+
+                            try
+                            {
+                                var request = data.Result.ToPreparedTrackingRequest();
+                                request.Engine.OnStoredRequestLoaded(request);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("Failed to deserialize request: {0}", ex.Message);
+                            }
+                        });
+        }
+
+        #endregion
+        
+        #region Request Processing
+        
         private void ProcessRequest(PreparedTrackingRequest request)
         {
             foreach (var finalizer in request.RequiredFinalizations)
                 finalizer.Finalize(request.Request);
-            
+
             var response = request.Engine.NetworkClient.Execute(request.Request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
@@ -677,23 +734,29 @@ namespace SierraLib.Analytics
             if (!response.Content.IsNullOrEmpty())
                 Debug.WriteLine("{0}", response.Content);
             Debug.Unindent();
-            KeyStore.Invalidate(request.RequestID.ToString());
+            KeyStore.Invalidate(string.Format("PreparedTrackingRequest_{0}", request.RequestID.ToString()));
         }
 
         private void OnRequestPrepared(PreparedTrackingRequest request)
         {
-            KeyStore.Insert(request.RequestID.ToString(), request.Serialize(), new DateTimeOffset(DateTime.Now.Add(QueueLifeSpan)));
+            KeyStore.Insert(string.Format("PreparedTrackingRequest_{0}", request.RequestID.ToString()),
+                            request.Serialize(), new DateTimeOffset(DateTime.Now.Add(QueueLifeSpan)));
 
+            RequestQueue.OnNext(request);
+        }
+
+        private void OnStoredRequestLoaded(PreparedTrackingRequest request)
+        {
             RequestQueue.OnNext(request);
         }
 
         private void OnRequestTransmitted(PreparedTrackingRequest request)
         {
-            KeyStore.Invalidate(request.RequestID.ToString());
+            KeyStore.Invalidate(string.Format("PreparedTrackingRequest_{0}",request.RequestID.ToString()));
         }
 
         #endregion
-
+        
         #region Object Implementation
 
         /// <summary>
