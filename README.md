@@ -104,10 +104,59 @@ public void TrackMe()
 
 I've actually skipped a few steps and shown a rather wide range of things you can do here, including filtering (keep in mind that the default is to trigger on all events), including static modules with attributes, and error handling for exceptions.
 
-### Done
-To be honest, there's actually quite a lot more you can do with the libraries, there are whole truckloads of modules included by default which I won't go into here and plenty more functionality which you can find by fiddling around with the library for a few minutes. Overall though, this should give you a pretty good idea of how to go about implementing your first tracker
+### Persistent Storage
+Often you'll encounter usage scenarios where it is possible that your tracking requests will not have been submitted by the time the user wants to close the application, or the user may not have an active internet connection. Whatever the reason, the end result is that your trackig telemetry will not have been submitted to the relevant tracking servers. Our library handles this by storing requests in a persistent archive from which they are removed after being sent to the server. To make use of this store you will need to make a call to the `TrackingEngine.ProcessStoredRequests()` method, which tells the library to load all the relevant requests and attempt to transmit them to the server.
+
+**Warning** You need to ensure that the tracking engine that the requests were generated on is initialized before making the call to `ProcessStoredRequests`. Failure to do so will result in your requests not being sent (even if it were possible, or the tracking engine is initialized later).
+
+**Warning** If you are using multiple tracking engines within your application you should initialize all of them before making the call to `ProcessStoredRequests` to ensure that all possible requests are sent.
+
+**Info** Making subsequent requests to `ProcessStoredRequests` will have no effect and will result in no additional requests being transmitted.
+
+### Exiting
+When exiting your application it is generally a good idea to give our library a bit of time to clean house. While not entirely necessary (everything should be stored on disk already), doing so allows any pending requests to complete and means less work for the application the next time you start it (processing the stored requests).
+
+When exiting your application, we recommend you use the `WaitForActive` method to wait until all the active requests complete before allowing the application to exit.
+
+```csharp
+void CloseMe()
+{
+    // Wait 3 seconds before continuing anyway (if there are still requests pending)
+    TrackingEngine.WaitForActive(TimeSpan.FromMilliseconds(3000));
+
+    // ... Exit?
+}
+```
+
+### Opting-Out
+Most of the time you will want to present your users with the option to opt-out of tracking. We believe that if you don't want to be tracked you shouldn't be, and we know that developers are a lot more likely to give their users the option if it doesn't require any excess effort on their part...
+
+In order to prevent an engine from processing any `Track` calls (essentially preventing any tracking requests from being generated) all you need to do is set the `Enabled` property on the relevant engine to `false`.
+
+```csharp
+void LoadSettings()
+{
+    // ... get your settings
+
+    TrackingEngine.GetEngine(() => LoadThemSettings()).Enabled = !settings.OptOut;
+}
+```
 
 ## Custom Tracking Engines
 One of the primary design aims of SierraLib.Analytics was to provide an extremely versatile and easy to use platform for implementing custom tracking solutions through the use of reusable patterns and a number of extremely powerful supporting classes. To give you an idea of how easy it is to implement your own tracking engine, Google's Universal Analytics protocol took us a bare 3 hours to implement.
 
 To create a custom tracking engine, you need to derive from the `TrackingEngine` class and implement the relevant methods. There are a few additional methods which you can also override to provide custom logic, for example *Pre* and *Post* processing of requests on the engine level.
+
+You should also try to ensure that your tracking engines are written in such a way as to minimize stored state information. By doing so you make it easier for the engine to be used across tracking requests from different instances of the application. For example, try to avoid keeping counters in te engine or relying on mappings between the engine and any requests made through it. If you need to store state information for a request, create your own implementation of the `PreparedTrackingRequest` class and store it there (remember to implement the ISerializable interface).
+
+## Thanks
+I've use a few brilliant open source libraries to help me develop SierraLib.Analytics, without them it would have taken considerably longer to do and I can guarantee it wouldn't be anywhere near as good as it is today.
+
+### [RestSharp](https://github.com/restsharp/RestSharp) by [Andrew Young](https://github.com/ayoung)
+RestSharp is a wrapper around the .NET Framework's built in HttpRequest framework, but don't let that fool you - it is exceptionally easy to use and allows you to access remote services without having to worry about all the nitty-gritty details, it is my go-to library for anything HTTP.
+
+### [Akavache](https://github.com/github/Akavache) by [Paul Betts](https://github.com/xpaulbettsx) and [Phil Haack](https://github.com/Haacked)
+Akavache is a custom key-value store for .NET which provides itself as a fully asynchronous (seriously, it doesn't even have synchronous access without some serious hacks) collection. It allows you to store almost anything without having to worry about writing up serialization contracts, ensuring that files exist and other such nonsense. Its other strength lies in its ability to cache content from remote sources in a very easy to use and developer friendly manner. I'd recommend it to anyone looking for a drop-in persistent storage or caching solution.
+
+### [Reactive Extensions](https://rx.codeplex.com/) by [Microsoft Open Technologies, Inc.](https://github.com/MSOpenTech)
+Reactive Extensions (or Rx as all the cool kids say) is an awesome project which presents developers with a new way to think about, and handle, events in .NET. The general idea is that events are treated as collections, allowing you to manipulate them in interesting ways. My personal favourite is the `.Throttle` function which has saved my sanity more times than I care to count, and puts a smile on my face each time I use it. Rx is a must have for modern applications which need to react to complex user input in a reliable and efficient manner.
