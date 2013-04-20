@@ -463,4 +463,93 @@ namespace SierraLib.Analytics.Google
     }
 
     #endregion
+
+    #region E-Commerce
+
+    public sealed class Item : ITrackingModule
+    {
+        public Item(string transactionID, string itemName)
+        {
+            TransactionID = transactionID;
+            Name = itemName;
+        }
+
+        public string TransactionID
+        { get; set; }
+
+        public string Name
+        { get; set; }
+
+        public double? Price
+        { get; set; }
+
+        public int? Quantity
+        { get; set; }
+
+        public string Code
+        { get; set; }
+
+        public string Category
+        { get; set; }
+
+        public string CurrencyCode
+        { get; set; }
+
+        public void PreProcess(RestSharp.IRestRequest request)
+        {
+            request.AddParameterExclusiveOrThrow("t", "item");
+            request.AddParameterExclusive("ti", TransactionID.Truncate(500));
+            request.AddParameterExclusive("in", Name.Truncate(500));
+            if (Price.HasValue)
+                request.AddParameterExclusive("ip", Price.Value);
+            if (Quantity.HasValue)
+                request.AddParameterExclusive("iq", Quantity.Value);
+            if (!Code.IsNullOrWhitespace())
+                request.AddParameterExclusive("ic", Code.Truncate(500));
+            if (!Category.IsNullOrWhitespace())
+                request.AddParameterExclusive("iv", Category.Truncate(500));
+            if (!CurrencyCode.IsNullOrWhitespace())
+                request.AddParameterExclusive("cu", CurrencyCode.Truncate(10));
+        }
+    }
+
+    public sealed class Transaction : ITrackingModule
+    {
+        public Transaction(string transactionID)
+        {
+            TransactionID = transactionID;
+        }
+
+        public string TransactionID
+        { get; set; }
+
+        public string Affiliation
+        { get; set; }
+
+        public double? Revenue
+        { get; set; }
+
+        public double? Shipping
+        { get; set; }
+
+        public double? Tax
+        { get; set; }
+
+        public void PreProcess(RestSharp.IRestRequest request)
+        {
+            request.AddParameterExclusiveOrThrow("t", "transaction");
+            request.AddParameterExclusive("ti", TransactionID.Truncate(500));
+
+            if (!Affiliation.IsNullOrWhitespace())
+                request.AddParameterExclusive("ta", Affiliation.Truncate(500));
+            if (Revenue.HasValue)
+                request.AddParameterExclusive("tr", Revenue.Value);
+            if (Shipping.HasValue)
+                request.AddParameterExclusive("ts", Shipping.Value);
+            if (Tax.HasValue)
+                request.AddParameterExclusive("tt", Tax.Value);
+        }
+    }
+
+    #endregion
 }
