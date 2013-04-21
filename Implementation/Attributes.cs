@@ -8,6 +8,10 @@ using System.Text;
 
 namespace SierraLib.Analytics.Implementation
 {
+    /// <summary>
+    /// When used in conjunction with Afterthought, allows methods marked with implementations of this attribute
+    /// to automatically handle exceptions generated therein by sending them to the tracking server.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
     public abstract class TrackOnExceptionAttributeBase : MethodWrapperAttribute, ITrackingModule
     {
@@ -35,6 +39,10 @@ namespace SierraLib.Analytics.Implementation
         }
     }
     
+    /// <summary>
+    /// Provides the base implementation for all tracking attributes which wish to support
+    /// filtering.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true, AllowMultiple = true)]
     public abstract class TrackingModuleAttributeBase : Attribute, ITrackingModule
     {

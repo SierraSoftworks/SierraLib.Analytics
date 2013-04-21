@@ -102,6 +102,10 @@ namespace SierraLib.Analytics
 
     #region Tracking Trigger Attributes
 
+    /// <summary>
+    /// When used in conjunction with Afterthought, allows methods marked with this attribute to trigger tracking
+    /// events when they are called.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnEntryAttribute : MethodWrapperAttribute
     {
@@ -119,6 +123,10 @@ namespace SierraLib.Analytics
         }
     }
 
+    /// <summary>
+    /// When used in conjunction with Afterthought, allows methods marked with this attribute to trigger
+    /// tracking events when their calls complete.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnExitAttribute : MethodWrapperAttribute
     {
