@@ -355,6 +355,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Tracks the current item as a PageView hit type
+    /// </summary>
     public sealed class PageView : ITrackingModule, ITrackingPostProcess
     {
         public void PreProcess(RestSharp.IRestRequest request)
