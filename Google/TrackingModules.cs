@@ -82,13 +82,22 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Specifies the Host name of the current page. Max length: 100
+    /// </summary>
     public sealed class HostName : ITrackingModule
     {
+        /// <summary>
+        /// Specifies the Host name of the current page. Max length: 100
+        /// </summary>
         public HostName(string value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Specifies the Host name of the current page. Max length: 100
+        /// </summary>
         public string Value
         { get; set; }
 
@@ -98,13 +107,22 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Specifies the path of the current page
+    /// </summary>
     public sealed class Path : ITrackingModule
     {
+        /// <summary>
+        /// Specifies the path of the current page
+        /// </summary>
         public Path(string value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Specifies the path of the current page
+        /// </summary>
         public string Value
         { get; set; }
 
@@ -114,13 +132,22 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Specifies the location of the current page
+    /// </summary>
     public sealed class LocationUri : ITrackingModule
     {
+        /// <summary>
+        /// Specifies the location of the current page
+        /// </summary>
         public LocationUri(string value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Specifies the location of the current page
+        /// </summary>
         public string Value
         { get; set; }
 
@@ -130,13 +157,22 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Specifies a description for the current page
+    /// </summary>
     public sealed class Description : ITrackingModule
     {
+        /// <summary>
+        /// Specifies a description for the current page
+        /// </summary>
         public Description(string value)
         {
             Value = value;
         }
 
+        /// <summary>
+        /// Specifies a description for the current page
+        /// </summary>
         public string Value
         { get; set; }
 
@@ -431,6 +467,10 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Indicates that an interaction was performed in the 
+    /// background without a user's active request.
+    /// </summary>
     public sealed class NonInteractive : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
@@ -443,8 +483,16 @@ namespace SierraLib.Analytics.Google
 
     #region Custom Dimensions
 
+    /// <summary>
+    /// Tracks a specific custom dimension for the current hit
+    /// </summary>
     public sealed class CustomDimension : ITrackingModule
     {
+        /// <summary>
+        /// Tracks a specific custom dimension for the current hit
+        /// </summary>
+        /// <param name="index">The unique index for this dimension. Value between 1 and 20 inclusive</param>
+        /// <param name="value">The value of this custom dimension. Max length: 150</param>
         public CustomDimension(byte index, string value)
         {
             Index = index;
@@ -452,6 +500,9 @@ namespace SierraLib.Analytics.Google
         }
 
         byte _index = 1;
+        /// <summary>
+        /// Specifies the custom dimension index. Must be between 1 and 20 inclusive
+        /// </summary>
         public byte Index
         {
             get { return _index; }
@@ -463,6 +514,9 @@ namespace SierraLib.Analytics.Google
             }
         }
 
+        /// <summary>
+        /// Specifies the custom dimension's value. Max length: 150
+        /// </summary>
         public string Value
         { get; set; }
                 
@@ -473,6 +527,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Tracks a custom metric for the current hit
+    /// </summary>
     public sealed class CustomMetric : ITrackingModule
     {
         public CustomMetric(byte index, int value)
@@ -482,6 +539,9 @@ namespace SierraLib.Analytics.Google
         }
 
         byte _index = 1;
+        /// <summary>
+        /// Specifies the index for the custom metric. Must be between 1 and 20 inclusive
+        /// </summary>
         public byte Index
         {
             get { return _index; }
@@ -493,6 +553,9 @@ namespace SierraLib.Analytics.Google
             }
         }
 
+        /// <summary>
+        /// Specifies the value for the custom metric
+        /// </summary>
         public int Value
         { get; set; }
 
@@ -506,17 +569,31 @@ namespace SierraLib.Analytics.Google
 
     #region System Information
 
+    /// <summary>
+    /// Tracks the current viewport's dimensions
+    /// </summary>
     public sealed class Viewport : ITrackingModule
     {
+        /// <summary>
+        /// Tracks the current viewport's dimensions
+        /// </summary>
+        /// <param name="width">The width of the viewport in pixels</param>
+        /// <param name="height">The height of the viewport in pixels</param>
         public Viewport(int width, int height)
         {
             Width = width;
             Height = height;
         }
 
+        /// <summary>
+        /// The width of the viewport in pixels
+        /// </summary>
         public int Width
         { get; set; }
 
+        /// <summary>
+        /// The height of the viewport in pixels
+        /// </summary>
         public int Height
         { get; set; }
                 

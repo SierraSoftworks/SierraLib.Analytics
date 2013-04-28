@@ -96,6 +96,12 @@ namespace SierraLib.Analytics.Google
     /// </summary>
     public sealed class EventAttribute : TrackingModuleAttributeBase
     {
+        /// <summary>
+        /// Tracks the current item an an Event hit type
+        /// </summary>
+        /// <param name="category">The category of the event</param>
+        /// <param name="action">The action of the event</param>
+        /// <param name="label">The label of the event</param>
         public EventAttribute(string category = null, string action = null, string label = null)
         {
             Category = category;
@@ -143,13 +149,23 @@ namespace SierraLib.Analytics.Google
         }
     }
     
+    /// <summary>
+    /// Tracks the current item as a PageView hit type
+    /// </summary>
     public sealed class PageViewAttribute : TrackingModuleAttributeBase
     {
+        /// <summary>
+        /// Tracks the current item as a PageView hit type
+        /// </summary>
+        /// <param name="path">The path of the page being tracked</param>
         public PageViewAttribute(string path)
         {
             Path = path;
         }
 
+        /// <summary>
+        /// Specifies the page's path
+        /// </summary>
         public string Path
         { get; set; }
 
@@ -165,6 +181,9 @@ namespace SierraLib.Analytics.Google
 
     #region Exceptions
 
+    /// <summary>
+    /// Tracks an exception within the marked method when used in conjunction with Afterthought
+    /// </summary>
     public sealed class OnExceptionAttribute : TrackOnExceptionAttributeBase
     {
         public OnExceptionAttribute()
@@ -172,6 +191,9 @@ namespace SierraLib.Analytics.Google
             TrackParameters = true;
         }
 
+        /// <summary>
+        /// Specifies whether or not call parameters are tracked with the request
+        /// </summary>
         public bool TrackParameters
         { get; set; }
 
