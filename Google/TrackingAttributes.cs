@@ -38,6 +38,9 @@ namespace SierraLib.Analytics.Google
 
     #region Session Control
 
+    /// <summary>
+    /// Causes a new session to be started with this tracking request
+    /// </summary>
     public sealed class StartSessionAttribute : TrackingModuleAttributeBase
     {
         public override void PreProcess(RestSharp.IRestRequest request)
@@ -46,6 +49,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Causes the current session to be terminated with this tracking request
+    /// </summary>
     public sealed class EndSessionAttribute : TrackingModuleAttributeBase
     {
         public override void PreProcess(RestSharp.IRestRequest request)
@@ -57,6 +63,34 @@ namespace SierraLib.Analytics.Google
     #endregion
 
     #region Hit Types
+
+    /// <summary>
+    /// Tracks the current item as an AppView hit type.
+    /// </summary>
+    /// <remarks>
+    /// Requires that your <see cref="UniversalAnalytics.TrackingID"/> corresponds
+    /// to a profile configured for App Tracking.
+    /// </remarks>
+    public sealed class AppViewAttribute : TrackingModuleAttributeBase
+    {
+        public AppViewAttribute(string description)
+        {
+            Description = description;
+        }
+
+        /// <summary>
+        /// The description of the page being viewed
+        /// </summary>
+        public string Description
+        { get; set; }
+
+        public override void PreProcess(RestSharp.IRestRequest request)
+        {
+            if (!Description.IsNullOrWhitespace())
+                request.AddParameterExclusive("cd", Description.Truncate(500));
+        }
+    }
+
 
     public sealed class EventAttribute : TrackingModuleAttributeBase
     {
@@ -95,23 +129,6 @@ namespace SierraLib.Analytics.Google
         }
     }
     
-    public sealed class AppViewAttribute : TrackingModuleAttributeBase
-    {
-        public AppViewAttribute(string description)
-        {
-            Description = description;
-        }
-
-        public string Description
-        { get; set; }
-
-        public override void PreProcess(RestSharp.IRestRequest request)
-        {
-            if (!Description.IsNullOrWhitespace())
-                request.AddParameterExclusive("cd", Description.Truncate(500));
-        }
-    }
-
     public sealed class PageViewAttribute : TrackingModuleAttributeBase
     {
         public PageViewAttribute(string path)

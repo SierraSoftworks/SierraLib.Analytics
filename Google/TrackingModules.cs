@@ -35,22 +35,34 @@ namespace SierraLib.Analytics.Google
 
     #region Traffic Sources
 
+    /// <summary>
+    /// Specifies the source from which the current page was reached
+    /// </summary>
     public sealed class Referrer : ITrackingModule
     {
-        public Referrer(string referrer)
+        /// <summary>
+        /// Specifies the source from which the current page was reached. Max length: 2048
+        /// </summary>
+        public Referrer(Uri referrer)
         {
             Value = referrer;
         }
 
-        public string Value
+        /// <summary>
+        /// A valid <see cref="Uri"/> representing the source from which this page was reached. Max length: 2048
+        /// </summary>
+        public Uri Value
         { get; set; }
 
         public void PreProcess(RestSharp.IRestRequest request)
         {
-            request.AddParameterExclusive("dr", Value.Truncate(2048));
+            request.AddParameterExclusive("dr", Value.ToString().Truncate(2048));
         }
     }
 
+    /// <summary>
+    /// Specifies the title of the current page. Max length: 1500
+    /// </summary>
     public sealed class Title : ITrackingModule
     {
         public Title(string value)
@@ -58,6 +70,9 @@ namespace SierraLib.Analytics.Google
             Value = value;
         }
 
+        /// <summary>
+        /// Specifies the title of the current page. Max length: 1500
+        /// </summary>
         public string Value
         { get; set; }
                 
@@ -135,6 +150,9 @@ namespace SierraLib.Analytics.Google
 
     #region Campaigns
 
+    /// <summary>
+    /// Allows an advertising campaign to be tracked
+    /// </summary>
     public sealed class Campaign : ITrackingModule
     {
         public Campaign()
@@ -142,21 +160,39 @@ namespace SierraLib.Analytics.Google
 
         }
 
+        /// <summary>
+        /// Gets or sets the name of the advertising campaign which generated the hit. Max length: 100
+        /// </summary>
         public string Name
         { get; set; }
-
+        
+        /// <summary>
+        /// Gets or sets the source from which the hit was generated. Max length: 100
+        /// </summary>
         public string Source
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the medium through which the hit was generated. Max length: 50
+        /// </summary>
         public string Medium
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the keyword which resulted in the hit. Max length: 500
+        /// </summary>
         public string Keyword
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the content of the advertising campaign. Max length: 500
+        /// </summary>
         public string Content
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the ID of the campaign. Max length: 100
+        /// </summary>
         public string ID
         { get; set; }
                 
@@ -177,13 +213,19 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GAAdWords : ITrackingModule
+    /// <summary>
+    /// Allows tracking of Google AdWords campaigns
+    /// </summary>
+    public sealed class AdWords : ITrackingModule
     {
-        public GAAdWords(string id)
+        public AdWords(string id)
         {
             ID = id;
         }
 
+        /// <summary>
+        /// Gets or sets the AdWords advert ID
+        /// </summary>
         [NotNull]
         public string ID
         { get; set; }
@@ -194,13 +236,19 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-    public sealed class GADisplayAds : ITrackingModule
+    /// <summary>
+    /// Allows tracking of Google Display Ads (DoubleClick ads)
+    /// </summary>
+    public sealed class DisplayAds : ITrackingModule
     {
-        public GADisplayAds(string id)
+        public DisplayAds(string id)
         {
             ID = id;
         }
 
+        /// <summary>
+        /// Gets or sets the Google Display Ads ID
+        /// </summary>
         [NotNull]
         public string ID
         { get; set; }
@@ -215,6 +263,9 @@ namespace SierraLib.Analytics.Google
 
     #region Exception Management
 
+    /// <summary>
+    /// Allows tracking of exceptions within your application
+    /// </summary>
     public sealed class TrackedException : ITrackingModule, ITrackingPostProcess
     {
         public TrackedException(Exception ex, bool fatal = true)
@@ -223,16 +274,22 @@ namespace SierraLib.Analytics.Google
             Fatal = fatal;
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Exception"/> which you'd like to track
+        /// </summary>
         public Exception Exception
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether or not the exception resulted in an application crash
+        /// </summary>
         public bool Fatal
         { get; set; }
 
         public void PreProcess(RestSharp.IRestRequest request)
         {
             request.AddParameterExclusive("exd", 
-                string.Format("{0}: '{1}' in {2}.{3}", Exception.GetType().Name, Exception.Message, Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name)
+                string.Format("{1}.{2}: {3}", Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name, Exception.Message)
                 .Truncate(150));
             request.AddParameterExclusive("exf", Fatal ? 1 : 0);
         }
@@ -247,6 +304,13 @@ namespace SierraLib.Analytics.Google
 
     #region Hit Types
 
+    /// <summary>
+    /// Tracks the current item as an AppView hit type.
+    /// </summary>
+    /// <remarks>
+    /// Requires that your <see cref="UniversalAnalytics.TrackingID"/> corresponds
+    /// to a profile configured for App Tracking.
+    /// </remarks>
     public sealed class AppView : ITrackingModule
     {
         public void PreProcess(RestSharp.IRestRequest request)
