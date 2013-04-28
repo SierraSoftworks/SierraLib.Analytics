@@ -91,7 +91,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
-
+    /// <summary>
+    /// Tracks the current item as an Event hit type
+    /// </summary>
     public sealed class EventAttribute : TrackingModuleAttributeBase
     {
         public EventAttribute(string category = null, string action = null, string label = null)
@@ -102,15 +104,27 @@ namespace SierraLib.Analytics.Google
             Value = 0;
         }
 
+        /// <summary>
+        /// Specifies the event category
+        /// </summary>
         public string Category
         { get; set; }
 
+        /// <summary>
+        /// Specifies the event action
+        /// </summary>
         public string Action
         { get; set; }
 
+        /// <summary>
+        /// Specifies the event label
+        /// </summary>
         public string Label
         { get; set; }
 
+        /// <summary>
+        /// Specifies the event value, must be non-negative
+        /// </summary>
         public int Value
         { get; set; }
 
