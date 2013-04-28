@@ -372,6 +372,9 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Tracks the current item as an Event hit type
+    /// </summary>
     public sealed class Event : ITrackingModule
     {
         public Event(string category = null, string action = null, string label = null, int value = 0)
