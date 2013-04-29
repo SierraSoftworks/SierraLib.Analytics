@@ -410,8 +410,17 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Tracks the current item as a Social Interaction hit type
+    /// </summary>
     public sealed class Social : ITrackingModule
     {
+        /// <summary>
+        /// Tracks the current item as a Social Interaction hit type
+        /// </summary>
+        /// <param name="socialNetwork">The social network for which the hit was generated</param>
+        /// <param name="action">The social hit action</param>
+        /// <param name="target">The social hit's target</param>
         public Social(string socialNetwork, string action, string target)
         {
             SocialNetwork = socialNetwork;
@@ -419,14 +428,23 @@ namespace SierraLib.Analytics.Google
             Target = target;
         }
 
+        /// <summary>
+        /// Specifies the social network for which the hit was generated
+        /// </summary>
         [NotNull]
         public string SocialNetwork
         { get; set; }
 
+        /// <summary>
+        /// Specifies the social hit's action
+        /// </summary>
         [NotNull]
         public string Action
         { get; set; }
 
+        /// <summary>
+        /// Specifies the social hit's target
+        /// </summary>
         [NotNull]
         public string Target
         { get; set; }
@@ -439,8 +457,14 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+    /// <summary>
+    /// Tracks timing metrics for the current hit
+    /// </summary>
     public sealed class UserTiming : ITrackingModule
     {
+        /// <summary>
+        /// Tracks timing metrics for the current hit
+        /// </summary>
         public UserTiming(string timingVariable, int milliseconds, string timingCategory = null, string timingLabel = null)
         {
             Category = timingCategory;
