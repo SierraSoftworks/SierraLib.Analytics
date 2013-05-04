@@ -1,8 +1,6 @@
 ﻿using SierraLib.Analytics.Implementation;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace SierraLib.Analytics.Google
 {
@@ -110,12 +108,12 @@ namespace SierraLib.Analytics.Google
     /// <summary>
     /// Specifies the path of the current page
     /// </summary>
-    public sealed class Path : ITrackingModule
+    public sealed class PagePath : ITrackingModule
     {
         /// <summary>
         /// Specifies the path of the current page
         /// </summary>
-        public Path(string value)
+        public PagePath(string value)
         {
             Value = value;
         }
