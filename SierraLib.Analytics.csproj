@@ -151,6 +151,18 @@
     <Compile Include="Google\PreparedTrackingRequest.cs" />
     <Compile Include="Google\UniversalAnalytics.cs" />
     <Compile Include="Implementation\TrackingModuleHelpers.cs" />
+    <Compile Include="TrackingEngine.Engine.cs">
+      <DependentUpon>TrackingEngine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TrackingEngine.Implementation.cs">
+      <DependentUpon>TrackingEngine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TrackingEngine.StaticMethods.cs">
+      <DependentUpon>TrackingEngine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TrackingEngine.TrackingMethods.cs">
+      <DependentUpon>TrackingEngine.cs</DependentUpon>
+    </Compile>
     <Compile Include="TrackingModule.cs" />
     <Compile Include="Implementation\PreparedTrackingRequestBase.cs" />
     <Compile Include="TrackingEngine.cs" />
