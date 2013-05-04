@@ -28,7 +28,7 @@ namespace SierraLib.Analytics
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
         public void Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
-            if (!Enabled)
+            if (!GlobalEnabled || !Enabled)
                 return;
 
             //Check that we have a valid UserAgent string, if not then load a default one

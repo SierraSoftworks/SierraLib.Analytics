@@ -23,7 +23,7 @@ namespace SierraLib.Analytics
         {
             BlobCache.ApplicationName = @"Sierra Softworks\Analytics";
 
-            RequestQueue.Subscribe(x =>
+            RequestQueue.Pausable(PauseQueue).Subscribe(x =>
                 Interlocked.Increment(ref ProcessingRequests));
         }
 
@@ -148,16 +148,45 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <remarks>
         /// This allows you to very easily disable tracking for a specific engine (for example, if the
-        /// user opts-out of tracking) without requiring any modifications to your code.
+        /// user opts-out of tracking) without requiring any modifications to your existing tracking code.
         /// </remarks>
         public bool Enabled
         { get; set; }
+
+        /// <summary>
+        /// Determines whether or not tracking is enabled for any engines.
+        /// </summary>
+        /// <remarks>
+        /// This allows you to very easily disable tracking for all engines (for example, if the user
+        /// opts-out of tracking) without requiring any modifications to your existing tracking code.
+        /// </remarks>
+        public static bool GlobalEnabled
+        { get; set; }
+
+        static bool _process = true;
+        /// <summary>
+        /// Determines whether or not new requests are processed as they come in
+        /// </summary>
+        /// <remarks>
+        /// This allows you to postpone processing of tracking requests until a certain
+        /// point or environment state is reached.
+        /// </remarks>
+        public static bool Process
+        {
+            get { return _process; }
+            set
+            {
+                _process = value;
+                PauseQueue.OnNext(value);
+            }
+        }
 
         #endregion
         
         #region Queue Management
 
         static readonly Subject<PreparedTrackingRequest> RequestQueue = new Subject<PreparedTrackingRequest>();
+        static readonly Subject<bool> PauseQueue = new Subject<bool>();
         static int ProcessingRequests = 0;
 
 

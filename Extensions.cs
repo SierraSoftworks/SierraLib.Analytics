@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -66,7 +69,7 @@ namespace SierraLib.Analytics
                 throw new InvalidOperationException("TrackingEngine not set for this method or any of its ancestors");
             return a.Engine;
         }
-        
+
         /// <summary>
         /// Converts an expression into a <see cref="MemberInfo"/>.
         /// </summary>
@@ -82,7 +85,7 @@ namespace SierraLib.Analytics
                 var unaryExpression = (UnaryExpression)lambda.Body;
                 memberExpression = (MemberExpression)unaryExpression.Operand;
             }
-            else if(lambda.Body is MethodCallExpression)
+            else if (lambda.Body is MethodCallExpression)
             {
                 return ((MethodCallExpression)lambda.Body).Method;
             }
@@ -107,8 +110,39 @@ namespace SierraLib.Analytics
         public static PreparedTrackingRequest ToPreparedTrackingRequest(this byte[] serialized)
         {
             var formatter = new BinaryFormatter();
-            using(var ms = new MemoryStream(serialized))            
-                return (PreparedTrackingRequest)formatter.Deserialize(ms);            
+            using (var ms = new MemoryStream(serialized))
+                return (PreparedTrackingRequest)formatter.Deserialize(ms);
+        }
+
+        public static IObservable<T> Pausable<T>(this IObservable<T> source, IObservable<bool> pauser)
+        {
+            return Observable.Create<T>(o =>
+            {
+                var paused = new SerialDisposable();
+                var subscription = Observable.Publish(source, ps =>
+                {
+                    var values = new ReplaySubject<T>();
+                    Func<bool, IObservable<T>> switcher = b =>
+                    {
+                        if (b)
+                        {
+                            values.Dispose();
+                            values = new ReplaySubject<T>();
+                            paused.Disposable = ps.Subscribe(values);
+                            return Observable.Empty<T>();
+                        }
+                        else
+                        {
+                            return values.Concat(ps);
+                        }
+                    };
+
+                    return pauser.StartWith(false).DistinctUntilChanged()
+                        .Select(p => switcher(p))
+                        .Switch();
+                }).Subscribe(o);
+                return new CompositeDisposable(subscription, paused);
+            });
         }
 
     }
