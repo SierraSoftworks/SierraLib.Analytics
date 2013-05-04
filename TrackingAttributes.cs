@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SierraLib.Analytics.Implementation;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Reflection;
-using System.Linq.Expressions;
-using SierraLib.Analytics.Implementation;
 
 namespace SierraLib.Analytics
 {

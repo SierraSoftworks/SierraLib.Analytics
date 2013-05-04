@@ -1,9 +1,6 @@
 ﻿using RestSharp.Serializers;
 using SierraLib.Analytics.Implementation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SierraLib.Analytics.Google
 {
