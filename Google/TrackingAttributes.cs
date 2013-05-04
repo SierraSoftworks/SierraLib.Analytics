@@ -59,6 +59,36 @@ namespace SierraLib.Analytics.Google
 
     #endregion
 
+    #region Details
+
+    /// <summary>
+    /// Specifies the title of the current page. Max length: 1500
+    /// </summary>
+    public sealed class TitleAttribute : TrackingModuleAttributeBase
+    {
+        /// <summary>
+        /// Specifies the title of the current page. Max length: 1500
+        /// </summary>
+        public TitleAttribute(string title)
+        {
+            Title = title;
+        }
+
+        /// <summary>
+        /// Specifies the title of the current page. Max length: 1500
+        /// </summary>
+        public string Title
+        { get; set; }
+
+
+        public override void PreProcess(RestSharp.IRestRequest request)
+        {
+            request.AddParameter("dt", Title);
+        }
+    }
+
+    #endregion
+
     #region Hit Types
 
     /// <summary>
