@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SierraLib
 {
-    public static class AssemblyInformation
+    static class AssemblyInformation
     {
         public static Version GetAssemblyFileVersion(Assembly assembly)
         {
