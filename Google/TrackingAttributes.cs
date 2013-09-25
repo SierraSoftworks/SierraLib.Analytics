@@ -87,6 +87,58 @@ namespace SierraLib.Analytics.Google
         }
     }
 
+	/// <summary>
+	/// Specifies the path of the current page. Max length: 1500
+	/// </summary>
+	public sealed class PathAttribute : TrackingModuleAttributeBase
+	{
+		/// <summary>
+		/// Specifies the title of the current page. Max length: 1500
+		/// </summary>
+		public PathAttribute(string path)
+		{
+			Path = path;
+		}
+
+		/// <summary>
+		/// Specifies the title of the current page. Max length: 1500
+		/// </summary>
+		public string Path
+		{ get; set; }
+
+
+		public override void PreProcess(RestSharp.IRestRequest request)
+		{
+			request.AddParameter("dp", Path);
+		}
+	}
+
+	/// <summary>
+	/// Specifies the description of the current page's content. Max length: 1500
+	/// </summary>
+	public sealed class PageDescriptionAttribute : TrackingModuleAttributeBase
+	{
+		/// <summary>
+		/// Specifies the description of the current page's content. Max length: 1500
+		/// </summary>
+		public PageDescriptionAttribute(string description)
+		{
+			Description = description;
+		}
+
+		/// <summary>
+		/// Specifies the title of the current page. Max length: 1500
+		/// </summary>
+		public string Description
+		{ get; set; }
+
+
+		public override void PreProcess(RestSharp.IRestRequest request)
+		{
+			request.AddParameter("cd", Description);
+		}
+	}
+
     #endregion
 
     #region Hit Types
