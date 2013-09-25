@@ -1,5 +1,4 @@
 ﻿using Akavache;
-using ReactiveUI;
 using RestSharp;
 using SierraLib.Analytics.Implementation;
 using System;
@@ -10,6 +9,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
+using ReactiveUI;
 
 namespace SierraLib.Analytics
 {
@@ -21,7 +21,7 @@ namespace SierraLib.Analytics
     {
         static TrackingEngine()
         {
-            BlobCache.ApplicationName = @"Sierra Softworks\Analytics";
+            BlobCache.ApplicationName = BlobCache.ApplicationName ?? @"Sierra Softworks\Analytics";
 
             RequestQueue.Pausable(PauseQueue).Subscribe(x =>
                 Interlocked.Increment(ref ProcessingRequests));
