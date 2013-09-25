@@ -323,7 +323,7 @@ namespace SierraLib.Analytics.Google
         public void PreProcess(RestSharp.IRestRequest request)
         {
             request.AddParameterExclusive("exd", 
-                string.Format("{1}.{2}: {3}", Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name, Exception.Message)
+                string.Format("{0}.{1}: {2}", Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name, Exception.Message)
                 .Truncate(150));
             request.AddParameterExclusive("exf", Fatal ? 1 : 0);
         }
