@@ -18,7 +18,7 @@ namespace SierraLib.Analytics.Implementation
 
         public static void AddParameterExclusive(this IRestRequest request, string name, object value)
         {
-            if (!request.Parameters.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            if (!request.Parameters.Any(x => x.Name != null && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 request.AddParameter(name, value);
         }
 
