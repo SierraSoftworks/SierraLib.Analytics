@@ -302,11 +302,19 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class TrackedException : ITrackingModule, ITrackingPostProcess
 	{
-		public TrackedException(Exception ex, bool fatal = true)
+		public TrackedException(Exception ex = null, bool fatal = true)
 		{
-			Message = ex.Message;
-			Source = string.Format("{0}.{1}", ex.TargetSite.DeclaringType.FullName, ex.TargetSite.Name);
-			StackTrace = ex.StackTrace;
+			if (ex != null)
+			{
+				Message = ex.Message;
+				if(ex.TargetSite != null)
+					Source = string.Format("{0}.{1}", ex.TargetSite.DeclaringType.FullName, ex.TargetSite.Name);
+			}
+			else
+			{
+				Message = null;
+				Source = null;
+			}
 
 			Fatal = fatal;
 		}
@@ -322,12 +330,7 @@ namespace SierraLib.Analytics.Google
 		/// </summary>
 		public string Source
 		{ get; set; }
-
-		/// <summary>
-		/// Gets or sets the stack trace accompanying this exception
-		/// </summary>
-		public string StackTrace { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets whether or not the exception resulted in an application crash
 		/// </summary>
@@ -336,9 +339,12 @@ namespace SierraLib.Analytics.Google
 
 		public void PreProcess(RestSharp.IRestRequest request)
 		{
-			request.AddParameterExclusive("exd", 
-				string.Format("{0}: {1}", Source, Message)
-				.Truncate(150));
+			var description = "";
+			if (!Source.IsNullOrWhitespace()) description = string.Format("{0}: ", Source);
+			if (!Message.IsNullOrWhitespace()) description = string.Format("{0}{1}", description, Message);
+
+			request.AddParameterExclusiveOrThrow("t", "exception");
+			request.AddParameterExclusive("exd", description.Truncate(150));
 			request.AddParameterExclusive("exf", Fatal ? 1 : 0);
 		}
 
