@@ -1,0 +1,34 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>SierraLib.Analytics</id>
+    <title>SierraLib.Analytics</title>
+    <version>1.0.0</version>
+    <authors>Sierra Softworks</authors>
+    <description>A custom analytics library with support for Google Analytics</description>
+    <copyright>Copyright 2013 Sierra Softworks</copyright>
+    <projectUrl>https://git.sierrasoftworks.com/sierralib/analytics</projectUrl>
+    <licenseUrl>https://sierrasoftworks.com/licence</licenseUrl>
+    <iconUrl>https://cdn.sierrasoftworks.com/logo.png</iconUrl>
+
+	  <dependencies>
+		  <dependency id="akavache" version="3.0.2" />
+		  <dependency id="akavache.portable" version="3.0.2" />
+		  <dependency id="Newtonsoft.Json" version="5.0.6" />
+		  <dependency id="reactiveui" version="5.1.2" />
+		  <dependency id="reactiveui-core" version="5.1.2" />
+		  <dependency id="reactiveui-platforms" version="5.1.2" />
+		  <dependency id="RestSharp" version="104.2.0" />
+		  <dependency id="Rx-Core" version="2.1.30214.0" />
+		  <dependency id="Rx-Interfaces" version="2.1.30214.0" />
+		  <dependency id="Rx-Linq" version="2.1.30214.0" />
+		  <dependency id="Rx-Main" version="2.1.30214.0" />
+		  <dependency id="Rx-PlatformServices" version="2.1.30214.0" />
+		  <dependency id="Rx-Xaml" version="2.1.30214.0" />
+	  </dependencies>
+  </metadata>
+
+	<files>
+		<file src="bin\Release\SierraLib.Analytics.dll" target="lib\net45\SierraLib.Analytics.dll"/>
+	</files>
+</package>
