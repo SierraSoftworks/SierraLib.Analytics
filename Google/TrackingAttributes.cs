@@ -299,6 +299,7 @@ namespace SierraLib.Analytics.Google
 
 		public override void PreProcess(RestSharp.IRestRequest request)
 		{
+			request.AddParameterExclusive("t", "exception");
 			request.AddParameterExclusive("exd", string.Format("{0}: {1} in {2}.{3}", Exception.GetType().Name, Exception.Message, Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name));
 			request.AddParameterExclusive("exf", 1);
 

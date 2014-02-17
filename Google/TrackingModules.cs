@@ -343,7 +343,7 @@ namespace SierraLib.Analytics.Google
 			if (!Source.IsNullOrWhitespace()) description = string.Format("{0}: ", Source);
 			if (!Message.IsNullOrWhitespace()) description = string.Format("{0}{1}", description, Message);
 
-			request.AddParameterExclusiveOrThrow("t", "exception");
+			request.AddParameterExclusive("t", "exception");
 			request.AddParameterExclusive("exd", description.Truncate(150));
 			request.AddParameterExclusive("exf", Fatal ? 1 : 0);
 		}
