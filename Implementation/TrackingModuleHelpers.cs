@@ -24,7 +24,7 @@ namespace SierraLib.Analytics.Implementation
 
         public static string Truncate(this string value, int maxLength)
         {
-            value = Regex.Replace(value, @"(\s)\s+", "$1").Trim();
+            value = Regex.Replace(value ?? "", @"(\s)\s+", "$1").Trim();
             if (value.Length > maxLength)
                 return value.Substring(0, maxLength);
             return value;
