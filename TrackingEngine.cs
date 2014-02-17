@@ -76,17 +76,36 @@ namespace SierraLib.Analytics
 		/// <returns>System </returns>
 		protected virtual string GetSystemInformationString()
 		{
-			var system = "PC";
+			var cpuType = "";
+			if (Environment.Is64BitProcess && Environment.Is64BitOperatingSystem) cpuType = "x86_64";
+			else if (Environment.Is64BitOperatingSystem) cpuType = "WOW64";
+			else cpuType = "x86";
 
-			var cpuType = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+			var osPlatform = "";
 
-			var osPlatform =    
-				(Environment.OSVersion.Platform & (PlatformID.Win32Windows | PlatformID.Win32S | PlatformID.Win32NT | PlatformID.WinCE)) != 0 ? "Windows" :
-				(Environment.OSVersion.Platform & PlatformID.Unix) != 0 ? "Unix" :
-				(Environment.OSVersion.Platform == PlatformID.MacOSX) ? "OS" : "Other";
-					   
-			return string.Format("{0}; {1} {2} {3}; {4}", 
-				system, cpuType, osPlatform, Environment.OSVersion.Version.ToString(), Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName);
+			switch (Environment.OSVersion.Platform)
+			{
+				case PlatformID.Win32Windows:
+					osPlatform = "Windows";
+					break;
+				case PlatformID.Win32NT:
+					osPlatform = "Windows NT";
+					break;
+				case PlatformID.Win32S:
+					osPlatform = "Windows"; 
+					break;
+				case PlatformID.MacOSX:
+					osPlatform = "Macintosh";
+					break;
+				case PlatformID.Unix:
+					osPlatform = "X11; Linux";
+					break;
+				case PlatformID.WinCE:
+					osPlatform = "Windows CE";
+					break;
+			}
+
+			return string.Format("{0} {1}; {2}; {3}", osPlatform, Environment.OSVersion.Version.ToString(2), cpuType, Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName);
 		}
 
 		/// <summary>
