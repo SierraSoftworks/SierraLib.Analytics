@@ -73,7 +73,12 @@ namespace SierraLib.Analytics
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine(Expression<Action> target)
         {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+			var memberInfo = target.GetMemberInfo();
+			if (memberInfo == null) return null;
+			var engineAttribute = memberInfo.GetCustomAttribute<TrackingEngineAttributeBase>(true);
+			if (engineAttribute == null) return null;
+
+            return engineAttribute.Engine;
         }
 
         /// <summary>
@@ -83,8 +88,13 @@ namespace SierraLib.Analytics
         /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine<T>(Expression<Action<T>> target)
-        {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+		{
+			var memberInfo = target.GetMemberInfo();
+			if (memberInfo == null) return null;
+			var engineAttribute = memberInfo.GetCustomAttribute<TrackingEngineAttributeBase>(true);
+			if (engineAttribute == null) return null;
+
+			return engineAttribute.Engine;
         }
 
         /// <summary>
@@ -94,8 +104,13 @@ namespace SierraLib.Analytics
         /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <paramref name="target"/> method</returns>
         public static TrackingEngine GetEngine<T>(Expression<Func<T>> target)
-        {
-            return target.GetMemberInfo().GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+		{
+			var memberInfo = target.GetMemberInfo();
+			if (memberInfo == null) return null;
+			var engineAttribute = memberInfo.GetCustomAttribute<TrackingEngineAttributeBase>(true);
+			if (engineAttribute == null) return null;
+
+			return engineAttribute.Engine;
         }
 
         /// <summary>
@@ -105,8 +120,11 @@ namespace SierraLib.Analytics
         /// <param name="target">An expression returning the target for which the engine should be retrieved</param>
         /// <returns>Returns the <see cref="TrackingEngine"/> attached to the <typeparamref name="T"/>ype</returns>
         public static TrackingEngine GetEngine<T>()
-        {
-            return typeof(T).GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+		{
+			var engineAttribute = typeof(T).GetCustomAttribute<TrackingEngineAttributeBase>(true);
+			if (engineAttribute == null) return null;
+
+			return engineAttribute.Engine;
         }
 
         /// <summary>
