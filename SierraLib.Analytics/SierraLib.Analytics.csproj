@@ -109,8 +109,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Afterthought">
-      <HintPath>..\..\..\..\Git\Afterthought\Afterthought\bin\Release\Afterthought.dll</HintPath>
+    <Reference Include="Afterthought, Version=1.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Afterthought-forked.1.1.9.0\lib\net40\Afterthought.dll</HintPath>
     </Reference>
     <Reference Include="Akavache">
       <HintPath>..\..\..\Projects\NETKey\packages\akavache.3.0.2\lib\net45\Akavache.dll</HintPath>
@@ -200,8 +201,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(ProjectDir)..\Tools\Afterthought\Afterthought.Amender.exe "$(TargetPath)"
-"$(ProjectDir)..\.nuget\NuGet.exe" pack "$(ProjectDir)$(ProjectName).nuspec" -OutputDirectory "$(SolutionDir)..\..\NuGet"</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)..\.nuget\NuGet.exe" pack "$(ProjectDir)$(ProjectName).nuspec" -OutputDirectory "$(SolutionDir)..\..\NuGet"
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

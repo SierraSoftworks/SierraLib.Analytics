@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SierraLib.Analytics
 {
@@ -26,7 +27,7 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <param name="application">The details of the application making the tracking request</param>
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
-        public void Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
+        public async Task Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
             if (!GlobalEnabled || !Enabled)
                 return;
@@ -35,8 +36,8 @@ namespace SierraLib.Analytics
             if (UserAgent.IsNullOrWhitespace())
                 UpdateUserAgent(application.Name, application.Version);
 
-            var request = CreateRequest(application);
-            PreProcess(request);
+            var request = await CreateRequestAsync(application);
+            await PreProcessAsync(request);
 
             List<ITrackingFinalize> requiringFinalization = new List<ITrackingFinalize>();
 
@@ -47,9 +48,9 @@ namespace SierraLib.Analytics
                     requiringFinalization.Add(module as ITrackingFinalize);
             }
 
-            PostProcess(request);
+            await PostProcessAsync(request);
 
-            var preparedRequest = PrepareRequest(request, requiringFinalization);
+            var preparedRequest = await PrepareRequestAsync(request, requiringFinalization);
 
             OnRequestPrepared(preparedRequest);
         }

@@ -3,9 +3,23 @@
   <metadata>
     <id>SierraLib.Analytics</id>
     <title>SierraLib.Analytics</title>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>Sierra Softworks</authors>
-    <description>A custom analytics library with support for Google Analytics</description>
+	<summary>Advanced analytics framework and Google Analytics library</summary>
+    <description>
+		SierraLib.Analytics gives you the tools to make integration of analytics as
+		easy as possible, whether you're creating your next great app or updating an
+		existing one.
+		
+		Designed as a framework on which analytics libraries may be integrated, and
+		built to take the headache out of their implementation, SierraLib.Analytics
+		gives you features like offline caching of analytics packets for later submission,
+		attribute based analytics properties and automatic setup and teardown of analytics
+		engines as required by your application.
+		
+		We've also included a Google Analytics implementation to demonstrate just how easy
+		it is to get started.
+	</description>
     <copyright>Copyright 2013 Sierra Softworks</copyright>
     <projectUrl>https://git.sierrasoftworks.com/sierralib/analytics</projectUrl>
     <licenseUrl>https://sierrasoftworks.com/licence</licenseUrl>

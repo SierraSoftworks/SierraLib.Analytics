@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SierraLib.Analytics.Google
 {
@@ -69,7 +70,7 @@ namespace SierraLib.Analytics.Google
 			return TrackingID;
 		}
 
-		protected override Implementation.PreparedTrackingRequest PrepareRequest(RestSharp.IRestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
+		protected async override Task<Implementation.PreparedTrackingRequest> PrepareRequestAsync(RestSharp.IRestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
 		{
 			return new PreparedTrackingRequest(this, request, finalizationQueue);
 		}
@@ -81,12 +82,12 @@ namespace SierraLib.Analytics.Google
 			return new RestSharp.RestClient("http://www.google-analytics.com") { UserAgent = userAgent };
 		}
 
-		protected override string CreateNewClientID(ITrackingApplication application)
+		protected async override Task<string> CreateNewClientIDAsync(ITrackingApplication application)
 		{
 			return Guid.NewGuid().ToString().ToLower();
 		}
 
-		protected override void PreProcess(RestSharp.IRestRequest request)
+		protected async override Task PreProcessAsync(RestSharp.IRestRequest request)
 		{
 			// Add protocol version
 			// https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
@@ -115,20 +116,20 @@ namespace SierraLib.Analytics.Google
 			request.AddParameterExclusive("ul", System.Threading.Thread.CurrentThread.CurrentCulture.Name);
 		}
 
-		protected override void PostProcess(RestSharp.IRestRequest request)
+		protected async override Task PostProcessAsync(RestSharp.IRestRequest request)
 		{
 			// Hit type (default)
 			// https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 			request.AddParameterExclusive("t", "appview"); //If we haven't set a type before this point
 		}
 
-		protected override RestSharp.IRestRequest CreateRequest(Implementation.ITrackingApplication application)
+		protected async override Task<RestSharp.IRestRequest> CreateRequestAsync(Implementation.ITrackingApplication application)
 		{
 			var request = new RestSharp.RestRequest("/collect", RestSharp.Method.POST);
 
 			// Client ID
 			// https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-			request.AddParameterExclusive("cid", GetClientID(application));
+			request.AddParameterExclusive("cid", await GetClientIDAsync(application));
 
 			// Add application name and version parameters to request
 			// https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
