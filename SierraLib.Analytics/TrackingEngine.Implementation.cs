@@ -70,7 +70,7 @@ namespace SierraLib.Analytics
         /// <param name="request">The request being used for the current tracking hit</param>
         protected async virtual Task PreProcessAsync(IRestRequest request)
         {
-			
+            await Task.Yield();
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace SierraLib.Analytics
         /// <param name="request">The request being used for the current tracking hit</param>
 		protected async virtual Task PostProcessAsync(IRestRequest request)
         {
-
+            await Task.Yield();
         }
 
         /// <summary>

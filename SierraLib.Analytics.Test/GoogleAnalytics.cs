@@ -10,6 +10,7 @@ using Akavache;
 using System.Diagnostics;
 using RestSharp;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace SierraLib.Analytics.Test
 {
@@ -19,6 +20,26 @@ namespace SierraLib.Analytics.Test
     public class GoogleAnalytics
     {
         public const string Account = "UA-40095482-1";
+
+        #region Setup and Teardown Logic
+
+        [TestInitialize]
+        public void Setup_Akavache()
+        {
+            BlobCache.ApplicationName = "SierraLib.Analytics.Test";
+        }
+
+        [TestCleanup]
+        public void Cleanup_Akavache()
+        {
+            BlobCache.Secure.InvalidateAll();
+            BlobCache.UserAccount.InvalidateAll();
+            BlobCache.LocalMachine.InvalidateAll();
+            BlobCache.Shutdown().Wait();
+        }
+
+        #endregion
+
 
         #region Core Logic Tests
 
@@ -46,7 +67,7 @@ namespace SierraLib.Analytics.Test
             Assert.IsNotNull(engine);
             Assert.IsInstanceOfType(engine, typeof(UniversalAnalytics));
         }
-        
+
         [TestMethod, TestCategory("Core Logic")]
         public void Tracking_SetUserAgent()
         {
@@ -55,7 +76,7 @@ namespace SierraLib.Analytics.Test
             Assert.IsInstanceOfType(engine, typeof(UniversalAnalytics));
 
             var oldUserAgent = engine.UserAgent;
-            
+
             engine.UpdateUserAgent("SierraLib.Analytics.Test", "1.0.0", "CustomUA");
             Assert.IsTrue(engine.UserAgent.IndexOf("CustomUA") != -1, "Custom UserAgent not propagated");
             engine.UserAgent = oldUserAgent;
@@ -90,16 +111,23 @@ namespace SierraLib.Analytics.Test
         public void Tracking_Serialization()
         {
             var engine = TrackingEngine.GetEngine(() => Tracking_Serialization()) as UniversalAnalytics;
-            var request = new RestRequest() {
+            var request = new RestRequest()
+            {
                 Resource = "/collect",
                 Method = Method.POST
             };
             request.AddParameter("q", "Test", ParameterType.GetOrPost);
             request.AddParameter("r", "Yargh!", ParameterType.GetOrPost);
             var pendingRequest = new PreparedTrackingRequest(engine, request, new Implementation.ITrackingFinalize[0]);
+            var formatter = new BinaryFormatter();
+
             PreparedTrackingRequest deserialized = null;
-            using (var ms = new MemoryStream(pendingRequest.Serialize()))            
-                deserialized = (PreparedTrackingRequest)ms.ToArray().ToPreparedTrackingRequest();
+            using (var ms = new MemoryStream())
+            {
+                formatter.Serialize(ms, pendingRequest);
+                ms.Seek(0, SeekOrigin.Begin);
+                deserialized = formatter.Deserialize(ms) as PreparedTrackingRequest;
+            }
 
             Assert.IsNotNull(deserialized);
             Assert.IsNotNull(deserialized.Request);

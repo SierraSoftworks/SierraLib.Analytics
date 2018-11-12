@@ -38,6 +38,6 @@ namespace SierraLib.Analytics.Implementation
     /// </summary>
     public interface ITrackingFinalize : ITrackingModule
     {
-        void Finalize(IRestRequest request);
+        void FinalizeRequest(IRestRequest request);
     }
 }

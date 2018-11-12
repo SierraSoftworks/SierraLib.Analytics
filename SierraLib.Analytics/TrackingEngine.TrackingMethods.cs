@@ -17,9 +17,9 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <param name="application">The details of the application making the tracking request</param>
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
-        public void Track(ITrackingApplication application, params ITrackingModule[] modules)
+        public async Task Track(ITrackingApplication application, params ITrackingModule[] modules)
         {
-            Track(application, modules as IEnumerable<ITrackingModule>);
+            await Track(application, modules as IEnumerable<ITrackingModule>);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track(Expression<Action> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track(Expression<Action> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track(Expression<Action> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
 
         #endregion
@@ -127,7 +127,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Action<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
 
         #endregion
@@ -180,7 +180,7 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Func<T>> triggerMethod, params ITrackingModule[] modules)
         {
-            Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
         }
 
         /// <summary>
@@ -197,9 +197,9 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
-        
+
         /// <summary>
         /// Tracks the <paramref name="modules"/> for the <see cref="triggerMethod"/> using the current <see cref="TrackingEngine"/>
         /// or the inherited <see cref="TrackingEngineAttributeBase"/> attribute's value if present.
@@ -213,9 +213,9 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Func<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
         }
-        
+
         /// <summary>
         /// Tracks the <paramref name="modules"/> for the <see cref="triggerMethod"/> using the current <see cref="TrackingEngine"/>
         /// or the inherited <see cref="TrackingEngineAttributeBase"/> attribute's value if present.
@@ -230,9 +230,9 @@ namespace SierraLib.Analytics
         /// </remarks>
         public void Track<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Track(triggerMethod.GetMemberInfo(), triggerType, modules);
+            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
         }
-        
+
         #endregion
 
         #region Internal Handling
@@ -245,9 +245,9 @@ namespace SierraLib.Analytics
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => x.Filter.HasFlag(triggerType)).Concat(modules).ToArray();
 
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(application, dataBundle);
+                Task.Run(() => engineAttributes.First().Engine.Track(application, dataBundle));
             else
-                Track(application, dataBundle);
+                Task.Run(() => Track(application, dataBundle));
         }
 
         #endregion

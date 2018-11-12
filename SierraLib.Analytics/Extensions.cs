@@ -97,23 +97,6 @@ namespace SierraLib.Analytics
             return memberExpression.Member;
         }
 
-        public static byte[] Serialize(this PreparedTrackingRequest request)
-        {
-            var formatter = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                formatter.Serialize(ms, request);
-                return ms.ToArray();
-            }
-        }
-
-        public static PreparedTrackingRequest ToPreparedTrackingRequest(this byte[] serialized)
-        {
-            var formatter = new BinaryFormatter();
-            using (var ms = new MemoryStream(serialized))
-                return (PreparedTrackingRequest)formatter.Deserialize(ms);
-        }
-
         public static IObservable<T> Pausable<T>(this IObservable<T> source, IObservable<bool> pauser)
         {
             return Observable.Create<T>(o =>

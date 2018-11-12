@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>SierraLib.Analytics.Fody Class Library</Description>
+    <Authors>SPARTAN</Authors>
+    <TargetFramework>net47</TargetFramework>
+    <AssemblyName>SierraLib.Analytics.Fody</AssemblyName>
+    <PackageId>SierraLib.Analytics.Fody</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SierraLib.Analytics\SierraLib.Analytics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.9.6.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

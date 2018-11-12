@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace SierraLib.Analytics
 {
@@ -18,7 +19,7 @@ namespace SierraLib.Analytics
         public static void TrackDefault(ITrackingApplication application, params ITrackingModule[] modules)
         {
             CheckDefaultSet();
-            Default.Track(application, modules);
+            Task.Run(() => Default.Track(application, modules));
         }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace SierraLib.Analytics
         public static void TrackDefault(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
             CheckDefaultSet();
-            Default.Track(application, modules);
+            Task.Run(() => Default.Track(application, modules));
         }
 
         #endregion
@@ -84,7 +85,7 @@ namespace SierraLib.Analytics
                 Default.Track(triggerMethod, triggerType, modules);
             }
         }
-        
+
         /// <summary>
         /// Tracks the <paramref name="modules"/> for the <see cref="triggerMethod"/> using the <see cref="Default"/> <see cref="TrackingEngine"/>
         /// or the inherited <see cref="TrackingEngineAttributeBase"/> attribute's value if present.
@@ -108,7 +109,7 @@ namespace SierraLib.Analytics
                 Default.Track(triggerMethod, TrackOn.All, modules);
             }
         }
-        
+
         /// <summary>
         /// Tracks the <paramref name="modules"/> for the <see cref="triggerMethod"/> using the <see cref="Default"/> <see cref="TrackingEngine"/>
         /// or the inherited <see cref="TrackingEngineAttributeBase"/> attribute's value if present.

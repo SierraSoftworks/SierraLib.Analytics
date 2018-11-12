@@ -64,23 +64,23 @@ namespace SierraLib.Analytics.Implementation
         { get; private set; }
 
         /// <summary>
-        /// Performs any final housekeeping for the request, and returns a <see cref="IRestRequest"/>
-        /// to submit the request to the tracking server.
+        /// Performs any final housekeeping for the <see cref="Request"> prior to it being
+        /// sent to the server.
         /// </summary>
         /// <returns></returns>
-        public virtual void Finalize()
+        public virtual void FinalizeRequest()
         {
 
         }
 
-        
+
         #region Serialization
 
         static readonly JsonSerializer Serializer = new JsonSerializer();
 
         protected void SerializeRequest(IRestRequest request, SerializationInfo info, StreamingContext context)
         {
-            using(var sw = new StringWriter())
+            using (var sw = new StringWriter())
             {
                 Serializer.Serialize(sw, request);
                 info.AddValue("Request", sw.ToString());

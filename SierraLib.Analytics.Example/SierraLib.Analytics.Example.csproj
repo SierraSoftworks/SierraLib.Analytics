@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>A small console application demonstrating how one would go about using SierraLib.Analytics</Description>
+    <VersionPrefix>2.0.0</VersionPrefix>
+    <Authors>Benjamin Pannell &lt;admin@sierrasoftworks.com&gt;</Authors>
+    <TargetFramework>net47</TargetFramework>
+    <AssemblyName>SierraLib.Analytics.Example</AssemblyName>
+    <PackageId>SierraLib.Analytics.Example</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SierraLib.Analytics\SierraLib.Analytics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>

@@ -9,8 +9,8 @@ namespace SierraLib.Analytics.Google
     [Serializable]
     public sealed class PreparedTrackingRequest : Imp.PreparedTrackingRequest
     {
-        internal PreparedTrackingRequest(UniversalAnalytics engine, IRestRequest request, 
-                                        IEnumerable<Imp.ITrackingFinalize> requiredFinalizations) 
+        internal PreparedTrackingRequest(UniversalAnalytics engine, IRestRequest request,
+                                        IEnumerable<Imp.ITrackingFinalize> requiredFinalizations)
             : base(engine, request, requiredFinalizations)
         {
             Generated = DateTime.UtcNow;
@@ -28,7 +28,7 @@ namespace SierraLib.Analytics.Google
         public DateTime Generated
         { get; private set; }
 
-        public override void Finalize()
+        public override void FinalizeRequest()
         {
             //Queue Time https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#
             Request.AddParameter("qt", DateTime.UtcNow.Subtract(Generated).TotalMilliseconds);

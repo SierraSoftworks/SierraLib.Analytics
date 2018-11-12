@@ -43,6 +43,6 @@
   </metadata>
 
 	<files>
-		<file src="bin\Release\SierraLib.Analytics.dll" target="lib\net45\SierraLib.Analytics.dll"/>
+		<file src="bin\Release\SierraLib.Analytics.dll" target="lib\net47\SierraLib.Analytics.dll"/>
 	</files>
 </package>

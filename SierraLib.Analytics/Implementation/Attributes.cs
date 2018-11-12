@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SierraLib.Analytics.Implementation
 {
@@ -32,10 +33,10 @@ namespace SierraLib.Analytics.Implementation
             Exception = ex;
             Parameters = parameters;
 
-            engine.Track(application, dataBundle);
+            Task.Run(() => engine.Track(application, dataBundle));
         }
     }
-    
+
     /// <summary>
     /// Provides the base implementation for all tracking attributes which wish to support
     /// filtering.

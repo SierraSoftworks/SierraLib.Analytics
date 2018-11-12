@@ -2,11 +2,12 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SierraLib.Analytics
 {
     #region Generic Tracking Attributes
-    
+
     /// <summary>
     /// Indicates that attached elements shouldn't be tracked by linked
     /// tracking engines
@@ -26,9 +27,9 @@ namespace SierraLib.Analytics
     {
         public TrackingEngineAttributeBase()
         {
-            
+
         }
-        
+
         /// <summary>
         /// Used to create a new <see cref="TrackingEngine"/> instance if one hasn't yet
         /// been created.
@@ -92,7 +93,7 @@ namespace SierraLib.Analytics
         public string Version
         { get; set; }
     }
-    
+
     #endregion
 
     #region Tracking Trigger Attributes
@@ -114,7 +115,7 @@ namespace SierraLib.Analytics
 
             Parameters = parameters;
 
-            engine.Track(application, dataBundle);
+            Task.Run(() => engine.Track(application, dataBundle));
         }
     }
 
@@ -137,7 +138,7 @@ namespace SierraLib.Analytics
             Parameters = parameters;
             Result = result;
 
-            engine.Track(application, dataBundle);
+            Task.Run(() => engine.Track(application, dataBundle));
         }
     }
 
