@@ -1,4 +1,4 @@
-﻿using SierraLib.Analytics.Implementation;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,7 +47,6 @@ namespace SierraLib.Analytics.Google
         /// Gets or Sets the Tracking ID used to associate data reported
         /// by this application with your account. The format is UA-XXXX-Y
         /// </summary>
-        [NotNull]
         public string TrackingID { get; set; }
 
         /// <summary>

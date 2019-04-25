@@ -1,4 +1,4 @@
-﻿using SierraLib.Analytics.Implementation;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -105,15 +105,11 @@ namespace SierraLib.Analytics
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnEntryAttribute : MethodWrapperAttribute
     {
-        protected object[] Parameters { get; private set; }
-
         public override void OnEntry(MethodBase method, object[] parameters)
         {
             var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Entry) != 0).ToArray();
-
-            Parameters = parameters;
 
             Task.Run(() => engine.Track(application, dataBundle));
         }
@@ -126,17 +122,11 @@ namespace SierraLib.Analytics
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class TrackOnExitAttribute : MethodWrapperAttribute
     {
-        protected object[] Parameters { get; private set; }
-        protected object Result { get; private set; }
-
         public override void OnExit(MethodBase method, object[] parameters, object result)
         {
             var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Exit) != 0).ToArray();
-
-            Parameters = parameters;
-            Result = result;
 
             Task.Run(() => engine.Track(application, dataBundle));
         }

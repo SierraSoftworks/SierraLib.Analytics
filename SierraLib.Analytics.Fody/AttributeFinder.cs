@@ -1,4 +1,4 @@
-﻿using Mono.Cecil;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace SierraLib.Analytics.Fody
 {
-    public class AttributeFinder
+    public class AttributeFinder<TAttribute>
+        where TAttribute : Attribute
     {
         public AttributeFinder(MethodDefinition method)
         {
             var customAttributes = method.CustomAttributes;
-            Handlers = customAttributes
-                .Where(a => InheritsType(a.AttributeType.Resolve(), typeof(SierraLib.Analytics.Implementation.MethodWrapperAttribute)))
-                .Select(a => new MethodHandler(a));
+            Attributes = customAttributes
+                .Where(a => InheritsType(a.AttributeType.Resolve(), typeof(TAttribute)));
         }
 
-        public IEnumerable<MethodHandler> Handlers { get; private set; }
+        public IEnumerable<CustomAttribute> Attributes { get; private set; }
 
         private bool InheritsType(TypeDefinition type, Type baseType)
         {

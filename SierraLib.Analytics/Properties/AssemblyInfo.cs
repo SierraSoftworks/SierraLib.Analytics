@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sierra Softworks")]
 [assembly: AssemblyProduct("SierraLib")]
-[assembly: AssemblyCopyright("Copyright © Sierra Softworks 2013")]
+[assembly: AssemblyCopyright("Copyright © Sierra Softworks 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

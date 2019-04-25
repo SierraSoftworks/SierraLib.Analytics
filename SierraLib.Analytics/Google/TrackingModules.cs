@@ -1,4 +1,5 @@
-﻿using SierraLib.Analytics.Implementation;
+using NullGuard;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Linq;
 
@@ -260,7 +261,6 @@ namespace SierraLib.Analytics.Google
 		/// <summary>
 		/// Gets or sets the AdWords advert ID
 		/// </summary>
-		[NotNull]
 		public string ID
 		{ get; set; }
 
@@ -283,7 +283,6 @@ namespace SierraLib.Analytics.Google
 		/// <summary>
 		/// Gets or sets the Google Display Ads ID
 		/// </summary>
-		[NotNull]
 		public string ID
 		{ get; set; }
 
@@ -449,21 +448,18 @@ namespace SierraLib.Analytics.Google
 		/// <summary>
 		/// Specifies the social network for which the hit was generated
 		/// </summary>
-		[NotNull]
 		public string SocialNetwork
 		{ get; set; }
 
 		/// <summary>
 		/// Specifies the social hit's action
 		/// </summary>
-		[NotNull]
 		public string Action
 		{ get; set; }
 
 		/// <summary>
 		/// Specifies the social hit's target
 		/// </summary>
-		[NotNull]
 		public string Target
 		{ get; set; }
 
@@ -491,17 +487,19 @@ namespace SierraLib.Analytics.Google
 			Milliseconds = milliseconds;
 		}
 
+        [AllowNull]
 		public string Category
 		{ get; set; }
 
-		[NotNull]
 		public string Variable
 		{ get; set; }
 
-		public string Label
+        [AllowNull]
+        public string Label
 		{ get; set; }
 
-		public int Milliseconds
+        [AllowNull]
+        public int Milliseconds
 		{ get; set; }
 
 		public void PreProcess(RestSharp.IRestRequest request)

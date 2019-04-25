@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>An analytics package for C# providing a brilliantly simple API and Google Analytics support out of the box.</Description>
     <VersionPrefix>2.0.0</VersionPrefix>
-    <Authors>Benjamin Pannell &lt;admin@sierrasoftworks.com&gt;</Authors>
+    <Authors>Benjamin Pannell</Authors>
     <TargetFramework>net47</TargetFramework>
     <AssemblyName>SierraLib.Analytics</AssemblyName>
     <PackageId>SierraLib.Analytics</PackageId>
@@ -16,21 +16,20 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <RepositoryUrl>https://github.com/SierraSoftworks/SierraLib.Analytics</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="afterthought-forked" Version="1.2.1.0" />
-    <PackageReference Include="akavache" Version="6.0.31" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="reactiveui" Version="9.2.2" />
-    <PackageReference Include="RestSharp" Version="106.5.4" />
-    <PackageReference Include="Rx-Core" Version="2.2.5" />
-    <PackageReference Include="Rx-Interfaces" Version="2.2.5" />
-    <PackageReference Include="Rx-Linq" Version="2.2.5" />
-    <PackageReference Include="Rx-Main" Version="2.2.5" />
-    <PackageReference Include="Rx-PlatformServices" Version="2.2.5" />
-    <PackageReference Include="Rx-Xaml" Version="2.2.5" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.11" />
+    <PackageReference Include="akavache" Version="6.5.1" />
+    <PackageReference Include="Fody" Version="4.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="NullGuard.Fody" Version="1.8.7" />
+    <PackageReference Include="reactiveui" Version="9.13.1" />
+    <PackageReference Include="RestSharp" Version="106.6.9" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.13" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">

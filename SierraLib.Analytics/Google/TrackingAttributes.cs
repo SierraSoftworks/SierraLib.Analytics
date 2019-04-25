@@ -1,4 +1,5 @@
-﻿using RestSharp.Serializers;
+using Newtonsoft.Json;
+using RestSharp.Serializers;
 using SierraLib.Analytics.Implementation;
 using System;
 
@@ -18,7 +19,6 @@ namespace SierraLib.Analytics.Google
 		/// Gets or Sets the Tracking ID used to associate data reported
 		/// by this application with your account. The format is UA-XXXX-Y
 		/// </summary>
-		[NotNull]
 		public string TrackingID
 		{ get; private set; }
 		
@@ -307,10 +307,8 @@ namespace SierraLib.Analytics.Google
 			var parametersValues = "";
 			if (TrackParameters)
 			{
-				var serializer = new JsonSerializer();
-
 				for (int i = 0; i < Parameters.Length; i++)
-					parametersValues += string.Format("arg{0}: {1}\n", i, serializer.Serialize(Parameters[i]));
+					parametersValues += string.Format("arg{0}: {1}\n", i, JsonConvert.SerializeObject(Parameters[i]));
 
 			}
 

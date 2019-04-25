@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SierraLib.Analytics.Implementation
 {
     /// <summary>
-    /// When used in conjunction with Afterthought, allows methods marked with implementations of this attribute
+    /// When used in conjunction with SierraLib.Analytics.Fody, allows methods marked with implementations of this attribute
     /// to automatically handle exceptions generated therein by sending them to the tracking server.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
@@ -19,6 +19,7 @@ namespace SierraLib.Analytics.Implementation
         public abstract void PreProcess(IRestRequest request);
 
         protected Exception Exception { get; private set; }
+
         protected object[] Parameters { get; private set; }
 
         public override void OnException(MethodBase method, Exception ex, object[] parameters)
