@@ -110,7 +110,7 @@ namespace SierraLib.Analytics.Test
             };
             request.AddParameter("q", "Test", ParameterType.GetOrPost);
             request.AddParameter("r", "Yargh!", ParameterType.GetOrPost);
-            var pendingRequest = new PreparedTrackingRequest(engine, request, new Implementation.ITrackingFinalize[0]);
+            var pendingRequest = new PreparedTrackingRequest(engine, request, Array.Empty<Implementation.ITrackingFinalize>());
             var formatter = new BinaryFormatter();
 
             PreparedTrackingRequest deserialized = null;
