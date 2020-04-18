@@ -1,10 +1,23 @@
-﻿using RestSharp;
+using RestSharp;
+using System;
+using System.Reflection;
 
 namespace SierraLib.Analytics.Implementation
 {
+    /// <summary>
+    /// Provides information about an application which is being tracked.
+    /// </summary>
     public interface ITrackingApplication
     {
+        /// <summary>
+        /// Gets the <see cref="Name"/> associated with the application
+        /// being tracked.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the <see cref="Version"/> of the application being tracked.
+        /// </summary>
         string Version { get; }
     }
 
@@ -14,6 +27,11 @@ namespace SierraLib.Analytics.Implementation
     /// </summary>
     public interface ITrackingModule
     {
+        /// <summary>
+        /// Called by the <see cref="TrackingEngine"/> to enable the tracking
+        /// module to perform pre-processing on a request.
+        /// </summary>
+        /// <param name="request">The <see cref="IRestRequest"/> which is being sent.</param>
         void PreProcess(IRestRequest request);
     }
 
@@ -28,6 +46,12 @@ namespace SierraLib.Analytics.Implementation
     /// </remarks>
     public interface ITrackingPostProcess : ITrackingModule
     {
+        /// <summary>
+        /// Called by the <see cref="TrackingEngine"/> to enable the tracking
+        /// module to perform post-processing on a request before it is enqueued
+        /// for sending.
+        /// </summary>
+        /// <param name="request">The <see cref="IRestRequest"/> which is being enqueued.</param>
         void PostProcess(IRestRequest request);
     }
 
@@ -38,6 +62,12 @@ namespace SierraLib.Analytics.Implementation
     /// </summary>
     public interface ITrackingFinalize : ITrackingModule
     {
+        /// <summary>
+        /// Called by the <see cref="TrackingEngine"/> to enable the tracking
+        /// module to perform some finalization on a request just prior to
+        /// sending.
+        /// </summary>
+        /// <param name="request">The <see cref="IRestRequest"/> which is being sent.</param>
         void FinalizeRequest(IRestRequest request);
     }
 }

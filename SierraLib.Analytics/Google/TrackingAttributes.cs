@@ -1,13 +1,17 @@
+using AspectInjector.Broker;
 using Newtonsoft.Json;
+using RestSharp;
 using RestSharp.Serializers;
 using SierraLib.Analytics.Implementation;
 using System;
+using System.Reflection;
 
 namespace SierraLib.Analytics.Google
 {
 	/// <summary>
 	/// Provides support for tracking application usage through Google's Universal Analytics tracking platform.
 	/// </summary>
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method, Inherited = true)]
 	public sealed class UniversalAnalyticsAttribute : TrackingEngineAttributeBase
 	{
 		public UniversalAnalyticsAttribute(string trackingID)
@@ -284,40 +288,20 @@ namespace SierraLib.Analytics.Google
 	/// <summary>
 	/// Tracks an exception within the marked method when used in conjunction with Afterthought
 	/// </summary>
-	public sealed class OnExceptionAttribute : TrackOnExceptionAttributeBase
+	public class TrackOnExceptionAttribute : Analytics.TrackOnExceptionAttribute
 	{
-		public OnExceptionAttribute()
-		{
-			TrackParameters = true;
-		}
+        /// <inheritdoc/>
+        protected override void PreProcessRequest(IRestRequest request, MethodBase method, object[] parameters, Exception ex)
+        {
+            request.AddParameterExclusive("t", "exception");
+            request.AddParameterExclusive("exd", string.Format("{0}: {1} in {2}.{3}", ex.GetType().Name, ex.Message, ex.TargetSite.DeclaringType.FullName, ex.TargetSite.Name));
+            request.AddParameterExclusive("exf", 1);
 
-		/// <summary>
-		/// Specifies whether or not call parameters are tracked with the request
-		/// </summary>
-		public bool TrackParameters
-		{ get; set; }
+            request.AddParameterExclusive("cd", string.Format("Stack Trace:\n {0}", ex.StackTrace).Truncate(2048));
 
-		public override void PreProcess(RestSharp.IRestRequest request)
-		{
-			request.AddParameterExclusive("t", "exception");
-			request.AddParameterExclusive("exd", string.Format("{0}: {1} in {2}.{3}", Exception.GetType().Name, Exception.Message, Exception.TargetSite.DeclaringType.FullName, Exception.TargetSite.Name));
-			request.AddParameterExclusive("exf", 1);
-
-
-			var parametersValues = "";
-			if (TrackParameters)
-			{
-				for (int i = 0; i < Parameters.Length; i++)
-					parametersValues += string.Format("arg{0}: {1}\n", i, JsonConvert.SerializeObject(Parameters[i]));
-
-			}
-
-			if (!string.IsNullOrWhiteSpace(parametersValues))
-				request.AddParameterExclusive("cd", string.Format("Parameters: {0}\n\nStack Trace:\n{1}", Exception.StackTrace, parametersValues).Truncate(2048));
-			else
-				request.AddParameterExclusive("cd", string.Format("Stack Trace:\n {0}", Exception.StackTrace).Truncate(2048));
-		}
-	}
+            base.PreProcessRequest(request, method, parameters, ex);
+        }
+    }
 
 	#endregion
 }

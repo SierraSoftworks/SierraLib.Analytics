@@ -1,3 +1,5 @@
+using AspectInjector.Broker;
+using RestSharp;
 using SierraLib.Analytics.Implementation;
 using System;
 using System.Linq;
@@ -13,7 +15,7 @@ namespace SierraLib.Analytics
     /// tracking engines
     /// </summary>
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method, Inherited = true)]
-    public sealed class DontTrackAttribute : MethodDontWrapAttribute
+    public sealed class DontTrackAttribute : Attribute
     {
 
     }
@@ -48,7 +50,8 @@ namespace SierraLib.Analytics
         protected abstract string GetEngineID();
 
 
-        private TrackingEngine _engine;
+        private TrackingEngine _engine = null;
+
         /// <summary>
         /// The name of the application being tracked
         /// </summary>
@@ -81,15 +84,12 @@ namespace SierraLib.Analytics
             }
         }
 
-        /// <summary>
-        /// The name of the application being tracked
-        /// </summary>
+
+        /// <inheritdoc/>
         public string Name
         { get; set; }
 
-        /// <summary>
-        /// The version of the application being tracked
-        /// </summary>
+        /// <inheritdoc/>
         public string Version
         { get; set; }
     }
@@ -99,36 +99,91 @@ namespace SierraLib.Analytics
     #region Tracking Trigger Attributes
 
     /// <summary>
-    /// When used in conjunction with Afterthought, allows methods marked with this attribute to trigger tracking
-    /// events when they are called.
+    /// Causes a tracking event to be submitted before this method is executed.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
-    public class TrackOnEntryAttribute : MethodWrapperAttribute
+    public class TrackOnEntryAttribute : TrackOnAttributeBase
     {
+        /// <inheritdoc/>
         public override void OnEntry(MethodBase method, object[] parameters)
         {
-            var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+            var engine = method.GetTrackingEngine();
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Entry) != 0).ToArray();
 
-            Task.Run(() => engine.Track(application, dataBundle));
+            engine?.TrackAsync(application, dataBundle);
         }
     }
 
     /// <summary>
-    /// When used in conjunction with Afterthought, allows methods marked with this attribute to trigger
-    /// tracking events when their calls complete.
+    /// Causes a tracking event to be submitted after this method is executed.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
-    public class TrackOnExitAttribute : MethodWrapperAttribute
+    public class TrackOnExitAttribute : TrackOnAttributeBase
     {
+        /// <inheritdoc/>
         public override void OnExit(MethodBase method, object[] parameters, object result)
         {
-            var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
+            var engine = method.GetTrackingEngine();
             var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Exit) != 0).ToArray();
 
-            Task.Run(() => engine.Track(application, dataBundle));
+            engine?.TrackAsync(application, dataBundle);
+        }
+    }
+
+    /// <summary>
+    /// Causes a tracking event to be generated each time an exception is thrown within this method.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
+    public class TrackOnExceptionAttribute : TrackOnAttributeBase
+    {
+        /// <summary>
+        /// Gets or sets the <see cref="Type"/> of exceptions which should be reported by this tracker.
+        /// </summary>
+        public Type ExceptionFilter
+        { get; set; }
+
+        /// <inheritdoc/>
+        public override void OnException(MethodBase method, object[] parameters, Exception ex)
+        {
+            if (ExceptionFilter != null && !ex.GetType().IsSubclassOf(ExceptionFilter))
+                return;
+
+            var engine = method.GetTrackingEngine();
+            var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
+            var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Exception) != 0)
+                .Cast<ITrackingModule>()
+                .Append(new CallbackTrackingModule(request => this.PreProcessRequest(request, method, parameters, ex))).ToArray();
+
+            engine?.TrackAsync(application, dataBundle);
+        }
+
+        /// <summary>
+        /// Overridden in a derived class to customize how the exception is reported.
+        /// </summary>
+        /// <param name="request">The <see cref="IRestRequest"/> responsible for reporting the exception.</param>
+        /// <param name="method">The method within which the exception was thrown.</param>
+        /// <param name="parameters">The parameters which were passed to the method.</param>
+        /// <param name="ex">The <see cref="Exception"/> which was thrown.</param>
+        protected virtual void PreProcessRequest(IRestRequest request, MethodBase method, object[] parameters, Exception ex)
+        {
+
+        }
+
+        private class CallbackTrackingModule : ITrackingModule
+        {
+            private readonly Action<IRestRequest> preProcess;
+
+            public CallbackTrackingModule(Action<IRestRequest> preProcess)
+            {
+                this.preProcess = preProcess;
+            }
+
+            public void PreProcess(IRestRequest request)
+            {
+                this.preProcess?.Invoke(request);
+            }
         }
     }
 

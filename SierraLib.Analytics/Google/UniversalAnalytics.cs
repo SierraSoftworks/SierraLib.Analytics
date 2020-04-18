@@ -71,7 +71,6 @@ namespace SierraLib.Analytics.Google
 
         protected async override Task<Implementation.PreparedTrackingRequest> PrepareRequestAsync(RestSharp.IRestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
         {
-            await Task.Yield();
             return new PreparedTrackingRequest(this, request, finalizationQueue);
         }
 
@@ -84,13 +83,11 @@ namespace SierraLib.Analytics.Google
 
         protected async override Task<string> CreateNewClientIDAsync(ITrackingApplication application)
         {
-            await Task.Yield();
             return Guid.NewGuid().ToString().ToLower();
         }
 
         protected async override Task PreProcessAsync(RestSharp.IRestRequest request)
         {
-            await Task.Yield();
             // Add protocol version
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
             request.AddParameterExclusive("v", ProtocolVersion);
@@ -106,8 +103,9 @@ namespace SierraLib.Analytics.Google
 
             // Screen resolution
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-            var screenArea = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-            request.AddParameterExclusive("sr", string.Format("{0}x{1}", screenArea.Width, screenArea.Height));
+            // TODO: Add support for gathering screen bounds in a cross-platform safe manner
+            // var screenArea = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+            // request.AddParameterExclusive("sr", string.Format("{0}x{1}", screenArea.Width, screenArea.Height));
 
             // Document encoding
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
@@ -120,15 +118,13 @@ namespace SierraLib.Analytics.Google
 
         protected async override Task PostProcessAsync(RestSharp.IRestRequest request)
         {
-            await Task.Yield();
             // Hit type (default)
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
             request.AddParameterExclusive("t", "appview"); //If we haven't set a type before this point
         }
 
-        protected async override Task<RestSharp.IRestRequest> CreateRequestAsync(Implementation.ITrackingApplication application)
+        protected async override Task<RestSharp.IRestRequest> CreateRequestAsync(ITrackingApplication application)
         {
-            await Task.Yield();
             var request = new RestSharp.RestRequest("/collect", RestSharp.Method.POST);
 
             // Client ID

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using SierraLib.Analytics.Google;
-using System.Threading;
-using Akavache;
-using System.Diagnostics;
-using RestSharp;
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Akavache;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RestSharp;
+using SierraLib.Analytics.Google;
 
 namespace SierraLib.Analytics.Test
 {
@@ -91,16 +85,14 @@ namespace SierraLib.Analytics.Test
         [AppView("BasicAppView")]
         public void Tracking_BasicAppView()
         {
-            TrackingEngine.TrackDefault(() => Tracking_BasicAppView(), TrackOn.Entry);
-
-            TrackingEngine.WaitForActive(TimeSpan.FromSeconds(30));
+            TrackingEngine.TrackDefaultAsync(() => Tracking_BasicAppView(), TrackOn.Entry);
         }
 
         [TestMethod, TestCategory("Tracking")]
         [Event("Tests", "MethodEntry", "TestEvent()", Filter = TrackOn.Entry)]
         public void Tracking_BasicEvent()
         {
-            TrackingEngine.TrackDefault(() => Tracking_BasicEvent(), TrackOn.Entry);
+            TrackingEngine.TrackDefaultAsync(() => Tracking_BasicEvent(), TrackOn.Entry);
         }
 
         #endregion

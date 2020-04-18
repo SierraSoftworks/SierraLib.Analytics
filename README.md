@@ -15,16 +15,16 @@ You should also add the `TrackingApplication` attribute if you wish to provide a
 ```csharp
 //On the assembly level
 [assembly:UniversalAnalytics("UA-1234-1")]
-[assembly:TrackingApplication("My Application", "1.1.2")]
+[assembly:TrackingApplication(Name = "My Application", Version = "1.1.2")]
 
 //On the class level
 [UniversalAnalytics("UA-1234-1")]
-[TrackingApplication("My Application", "1.1.2")]
+[TrackingApplication(Name = "My Application", Version = "1.1.2")]
 public class TrackMe
 {
     //On the method level
     [UniversalAnalytics("UA-1234-1")]
-    [TrackingApplication("My Application", "1.1.2")]
+    [TrackingApplication(Name = "My Application", Version = "1.1.2")]
     public void PleaseSir(bool someMore)
     {
 
@@ -113,21 +113,6 @@ Often you'll encounter usage scenarios where it is possible that your tracking r
 
 **Info** Making subsequent requests to `ProcessStoredRequests` will have no effect and will result in no additional requests being transmitted.
 
-### Exiting
-When exiting your application it is generally a good idea to give our library a bit of time to clean house. While not entirely necessary (everything should be stored on disk already), doing so allows any pending requests to complete and means less work for the application the next time you start it (processing the stored requests).
-
-When exiting your application, we recommend you use the `WaitForActive` method to wait until all the active requests complete before allowing the application to exit.
-
-```csharp
-void CloseMe()
-{
-    // Wait 3 seconds before continuing anyway (if there are still requests pending)
-    TrackingEngine.WaitForActive(TimeSpan.FromMilliseconds(3000));
-
-    // ... Exit?
-}
-```
-
 ### Opting-Out
 Most of the time you will want to present your users with the option to opt-out of tracking. We believe that if you don't want to be tracked you shouldn't be, and we know that developers are a lot more likely to give their users the option if it doesn't require any excess effort on their part...
 
@@ -147,7 +132,7 @@ One of the primary design aims of SierraLib.Analytics was to provide an extremel
 
 To create a custom tracking engine, you need to derive from the `TrackingEngine` class and implement the relevant methods. There are a few additional methods which you can also override to provide custom logic, for example *Pre* and *Post* processing of requests on the engine level.
 
-You should also try to ensure that your tracking engines are written in such a way as to minimize stored state information. By doing so you make it easier for the engine to be used across tracking requests from different instances of the application. For example, try to avoid keeping counters in te engine or relying on mappings between the engine and any requests made through it. If you need to store state information for a request, create your own implementation of the `PreparedTrackingRequest` class and store it there (remember to implement the ISerializable interface).
+You should also try to ensure that your tracking engines are written in such a way as to minimize stored state information. By doing so you make it easier for the engine to be used across tracking requests from different instances of the application. For example, try to avoid keeping counters in te engine or relying on mappings between the engine and any requests made through it. If you need to store state information for a request, create your own implementation of the `PreparedTrackingRequest` class and store it there (remember to implement the `ISerializable` interface).
 
 ## Thanks
 I've use a few brilliant open source libraries to help me develop SierraLib.Analytics, without them it would have taken considerably longer to do and I can guarantee it wouldn't be anywhere near as good as it is today.

@@ -33,7 +33,7 @@ namespace SierraLib.Analytics
                     CreatingEngine = true;
                     EngineCache.Add(account, initializer(account));
                     CreatingEngine = false;
-                    if (Default == null)
+                    if (Default is null)
                         return (TEngine)(Default = EngineCache[account]);
                     else
                         return (TEngine)EngineCache[account];

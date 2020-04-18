@@ -1,3 +1,4 @@
+using AspectInjector.Broker;
 using RestSharp;
 using System;
 using System.Linq;
@@ -6,38 +7,6 @@ using System.Threading.Tasks;
 
 namespace SierraLib.Analytics.Implementation
 {
-    /// <summary>
-    /// When used in conjunction with SierraLib.Analytics.Fody, allows methods marked with implementations of this attribute
-    /// to automatically handle exceptions generated therein by sending them to the tracking server.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true, Inherited = true)]
-    public abstract class TrackOnExceptionAttributeBase : MethodWrapperAttribute, ITrackingModule
-    {
-        public Type ExceptionFilter
-        { get; set; }
-
-        public abstract void PreProcess(IRestRequest request);
-
-        protected Exception Exception { get; private set; }
-
-        protected object[] Parameters { get; private set; }
-
-        public override void OnException(MethodBase method, Exception ex, object[] parameters)
-        {
-            if (ExceptionFilter != null && !ex.GetType().IsSubclassOf(ExceptionFilter))
-                return;
-
-            var engine = method.GetCustomAttribute<TrackingEngineAttributeBase>(true).Engine;
-            var application = method.GetCustomAttribute<TrackingApplicationAttribute>(true) as ITrackingApplication;
-            var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => (x.Filter & TrackOn.Exception) != 0).Append((ITrackingModule)this).ToArray();
-
-            Exception = ex;
-            Parameters = parameters;
-
-            Task.Run(() => engine.Track(application, dataBundle));
-        }
-    }
-
     /// <summary>
     /// Provides the base implementation for all tracking attributes which wish to support
     /// filtering.
@@ -57,5 +26,28 @@ namespace SierraLib.Analytics.Implementation
         /// </summary>
         public TrackOn Filter
         { get; set; }
+    }
+
+    /// <summary>
+    /// Causes a tracking event to be submitted before this method is executed.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
+    [Injection(typeof(MethodInvokeAspect), Inherited = true)]
+    public class TrackOnAttributeBase : Attribute, IMethodInvokeTrigger
+    {
+        public virtual void OnEntry(MethodBase method, object[] parameters)
+        {
+            // Do nothing
+        }
+
+        public virtual void OnException(MethodBase method, object[] parameters, Exception exception)
+        {
+            // Do nothing
+        }
+
+        public virtual void OnExit(MethodBase method, object[] parameters, object result)
+        {
+            // Do nothing
+        }
     }
 }

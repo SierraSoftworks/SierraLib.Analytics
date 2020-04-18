@@ -1,4 +1,4 @@
-﻿using SierraLib.Analytics.Implementation;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,18 +33,23 @@ namespace SierraLib.Analytics
 
         public static T GetCustomAttribute<T>(this MethodBase method, bool inherit = false)
         {
-            return (T)method.GetCustomAttributes(typeof(T), inherit)[0];
+            return method.GetCustomAttributes<T>(inherit).FirstOrDefault();
         }
 
         public static IEnumerable<T> GetCustomAttributes<T>(this MethodBase method, bool inherit = false)
         {
-            return method.GetCustomAttributes(typeof(T), inherit).Cast<T>();
+            if (!inherit)
+                return method.GetCustomAttributes(typeof(T)).OfType<T>();
+
+            // We use this approach to avoid some problems with IL rewriting for automatic injection
+            return method.GetCustomAttributes(typeof(T)).OfType<T>()
+                .Concat(method.DeclaringType.GetCustomAttributes(typeof(T), inherit).OfType<T>());
         }
 
         public static TrackingEngine GetTrackingEngine(this MethodBase method)
         {
             var a = method.GetCustomAttribute<TrackingEngineAttributeBase>(true);
-            if (a == null)
+            if (a == null && TrackingEngine.Default == null)
                 throw new InvalidOperationException("TrackingEngine not set for this method or any of its ancestors");
             return a.Engine;
         }

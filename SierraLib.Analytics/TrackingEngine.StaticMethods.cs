@@ -1,4 +1,4 @@
-﻿using SierraLib.Analytics.Implementation;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace SierraLib.Analytics
         public static void TrackDefault(ITrackingApplication application, params ITrackingModule[] modules)
         {
             CheckDefaultSet();
-            Task.Run(() => Default.Track(application, modules));
+            Task.Run(() => Default.TrackAsync(application, modules));
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace SierraLib.Analytics
         public static void TrackDefault(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
             CheckDefaultSet();
-            Task.Run(() => Default.Track(application, modules));
+            Task.Run(() => Default.TrackAsync(application, modules));
         }
 
         #endregion
@@ -48,16 +48,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault(Expression<Action> triggerMethod, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync(Expression<Action> triggerMethod, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -73,16 +73,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault(Expression<Action> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync(Expression<Action> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 
@@ -97,16 +97,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault(Expression<Action> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefaultAsync(Expression<Action> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -122,16 +122,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault(Expression<Action> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefaultAsync(Expression<Action> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 
@@ -150,16 +150,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Action<T>> triggerMethod, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Action<T>> triggerMethod, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -175,16 +175,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 
@@ -199,16 +199,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Action<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefault<T>(Expression<Action<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -224,16 +224,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 
@@ -252,16 +252,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Func<T>> triggerMethod, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Func<T>> triggerMethod, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -277,16 +277,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 
@@ -302,16 +302,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Func<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Func<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, TrackOn.All, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, TrackOn.All, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, TrackOn.All, modules);
+                await Default.TrackAsync(triggerMethod, TrackOn.All, modules);
             }
         }
 
@@ -327,16 +327,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the <see cref="Default"/>
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public static void TrackDefault<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public static async Task TrackDefaultAsync<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
             var method = triggerMethod.GetMemberInfo();
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
             if (engineAttributes.Any())
-                engineAttributes.First().Engine.Track(triggerMethod, triggerType, modules);
+                await engineAttributes.First().Engine.TrackAsync(triggerMethod, triggerType, modules);
             else
             {
                 CheckDefaultSet();
-                Default.Track(triggerMethod, triggerType, modules);
+                await Default.TrackAsync(triggerMethod, triggerType, modules);
             }
         }
 

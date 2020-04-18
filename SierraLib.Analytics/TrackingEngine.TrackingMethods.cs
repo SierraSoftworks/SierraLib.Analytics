@@ -1,9 +1,10 @@
-﻿using SierraLib.Analytics.Implementation;
+using SierraLib.Analytics.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace SierraLib.Analytics
@@ -17,9 +18,9 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <param name="application">The details of the application making the tracking request</param>
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
-        public async Task Track(ITrackingApplication application, params ITrackingModule[] modules)
+        public async Task TrackAsync(ITrackingApplication application, params ITrackingModule[] modules)
         {
-            await Track(application, modules as IEnumerable<ITrackingModule>);
+            await TrackAsync(application, modules as IEnumerable<ITrackingModule>);
         }
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace SierraLib.Analytics
         /// </summary>
         /// <param name="application">The details of the application making the tracking request</param>
         /// <param name="modules">The <see cref="ITrackingModule"/>s being used to generate the request</param>
-        public async Task Track(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync(ITrackingApplication application, IEnumerable<ITrackingModule> modules)
         {
             if (!GlobalEnabled || !Enabled)
                 return;
@@ -71,9 +72,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track(Expression<Action> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
+        public async Task TrackAsync(Expression<Action> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         /// <summary>
@@ -87,9 +88,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track(Expression<Action> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync(Expression<Action> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
         }
 
         /// <summary>
@@ -104,9 +105,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track(Expression<Action> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync(Expression<Action> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         #endregion
@@ -125,9 +126,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
+        public async Task TrackAsync<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType = TrackOn.Entry, params ITrackingModule[] modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         /// <summary>
@@ -141,9 +142,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Action<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync<T>(Expression<Action<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
         }
 
         /// <summary>
@@ -158,9 +159,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync<T>(Expression<Action<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         #endregion
@@ -178,9 +179,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Func<T>> triggerMethod, params ITrackingModule[] modules)
+        public async Task TrackAsync<T>(Expression<Func<T>> triggerMethod, params ITrackingModule[] modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
         }
 
         /// <summary>
@@ -195,9 +196,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
+        public async Task TrackAsync<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, params ITrackingModule[] modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         /// <summary>
@@ -211,9 +212,9 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Func<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync<T>(Expression<Func<T>> triggerMethod, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), TrackOn.All, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), TrackOn.All, modules);
         }
 
         /// <summary>
@@ -228,16 +229,16 @@ namespace SierraLib.Analytics
         /// method or one of its ancestors as the tracking engine. If no such attribute is found, then the current
         /// <see cref="TrackingEngine"/> will be used instead.
         /// </remarks>
-        public void Track<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        public async Task TrackAsync<T>(Expression<Func<T>> triggerMethod, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
-            Task.Run(() => Track(triggerMethod.GetMemberInfo(), triggerType, modules));
+            await TrackAsync(triggerMethod.GetMemberInfo(), triggerType, modules);
         }
 
         #endregion
 
         #region Internal Handling
 
-        private void Track(MemberInfo method, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
+        private async Task TrackAsync(MemberInfo method, TrackOn triggerType, IEnumerable<ITrackingModule> modules)
         {
             var engineAttributes = method.GetCustomAttributes<TrackingEngineAttributeBase>(true);
 
@@ -245,9 +246,9 @@ namespace SierraLib.Analytics
             var dataBundle = method.GetCustomAttributes<TrackingModuleAttributeBase>(true).Where(x => x.Filter.HasFlag(triggerType)).Concat(modules).ToArray();
 
             if (engineAttributes.Any())
-                Task.Run(() => engineAttributes.First().Engine.Track(application, dataBundle));
+                await engineAttributes.First().Engine.TrackAsync(application, dataBundle);
             else
-                Task.Run(() => Track(application, dataBundle));
+                await TrackAsync(application, dataBundle);
         }
 
         #endregion

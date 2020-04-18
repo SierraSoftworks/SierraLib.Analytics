@@ -1,4 +1,3 @@
-using NullGuard;
 using SierraLib.Analytics.Implementation;
 using System;
 using System.Linq;
@@ -487,18 +486,15 @@ namespace SierraLib.Analytics.Google
 			Milliseconds = milliseconds;
 		}
 
-        [AllowNull]
 		public string Category
 		{ get; set; }
 
 		public string Variable
 		{ get; set; }
 
-        [AllowNull]
         public string Label
 		{ get; set; }
 
-        [AllowNull]
         public int Milliseconds
 		{ get; set; }
 

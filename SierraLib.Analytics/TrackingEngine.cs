@@ -1,4 +1,4 @@
-﻿using Akavache;
+using Akavache;
 using RestSharp;
 using SierraLib.Analytics.Implementation;
 using System;
@@ -10,6 +10,8 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace SierraLib.Analytics
 {
@@ -22,9 +24,6 @@ namespace SierraLib.Analytics
         static TrackingEngine()
         {
             BlobCache.ApplicationName = BlobCache.ApplicationName ?? @"Sierra Softworks\Analytics";
-
-            RequestQueue.Pausable(PauseQueue).Subscribe(x =>
-                Interlocked.Increment(ref ProcessingRequests));
         }
 
         /// <summary>
@@ -170,7 +169,7 @@ namespace SierraLib.Analytics
         /// user opts-out of tracking) without requiring any modifications to your existing tracking code.
         /// </remarks>
         public bool Enabled
-        { get; set; }
+        { get; set; } = true;
 
         /// <summary>
         /// Determines whether or not tracking is enabled for any engines.
@@ -180,7 +179,7 @@ namespace SierraLib.Analytics
         /// opts-out of tracking) without requiring any modifications to your existing tracking code.
         /// </remarks>
         public static bool GlobalEnabled
-        { get; set; }
+        { get; set; } = true;
 
         static bool _process = true;
         /// <summary>
@@ -204,45 +203,8 @@ namespace SierraLib.Analytics
 
         #region Queue Management
 
-        static readonly Subject<PreparedTrackingRequest> RequestQueue = new Subject<PreparedTrackingRequest>();
         static readonly Subject<bool> PauseQueue = new Subject<bool>();
-        static int ProcessingRequests = 0;
-
-
-        /// <summary>
-        /// Determines whether or not the tracking engine is currently busy processing requests.
-        /// </summary>
-        /// <remarks>
-        /// This property can be used to wait for the global request queue to become empty, however
-        /// it is generally easier to just call <see cref="TrackingEngine.WaitForActive"/>.
-        /// </remarks>
-        public static bool ActiveRequests
-        {
-            get { return ProcessingRequests > 0; }
-        }
-
-        /// <summary>
-        /// Waits for any <see cref="ActiveRequests"/> to complete before returning
-        /// </summary>
-        public static void WaitForActive()
-        {
-            while (ActiveRequests)
-                Thread.Sleep(10);
-        }
-
-        /// <summary>
-        /// Waits for any <see cref="ActiveRequests"/> to complete before returning
-        /// </summary>
-        /// <param name="timeout">
-        /// The amount of time to wait for <see cref="ActiveRequests"/> to process
-        /// before giving up.
-        /// </param>
-        public static void WaitForActive(TimeSpan timeout)
-        {
-            var finalTime = DateTime.Now.Add(timeout);
-            while (ActiveRequests && DateTime.Now < finalTime)
-                Thread.Sleep(10);
-        }
+        static readonly Subject<PreparedTrackingRequest> RequestQueue = new Subject<PreparedTrackingRequest>();
 
         /// <summary>
         /// Loads and processes any tracking requests which were not sent
@@ -288,8 +250,6 @@ namespace SierraLib.Analytics
                 OnRequestFailed(request, response);
             else
                 OnRequestTransmitted(request);
-
-            Interlocked.Decrement(ref ProcessingRequests);
         }
 
         private void OnRequestFailed(PreparedTrackingRequest request, IRestResponse response)
