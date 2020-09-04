@@ -29,7 +29,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="reactiveui" Version="11.5.35" />
     <PackageReference Include="RestSharp" Version="106.11.4" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.3" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="AspectInjector" Version="2.4.1" />
     <PackageReference Include="MinVer" Version="2.3.0">
