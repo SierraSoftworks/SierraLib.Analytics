@@ -5,7 +5,7 @@ updates:
       schedule:
           interval: daily
       open-pull-requests-limit: 10
-    - directory: /.github/workflows
+    - directory: /
       package-ecosystem: github-actions
       schedule:
           interval: daily
