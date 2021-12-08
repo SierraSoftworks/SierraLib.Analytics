@@ -31,7 +31,7 @@
     <PackageReference Include="RestSharp" Version="106.13.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.7" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="AspectInjector" Version="2.6.0" />
+    <PackageReference Include="AspectInjector" Version="2.6.1" />
     <PackageReference Include="MinVer" Version="2.5.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
