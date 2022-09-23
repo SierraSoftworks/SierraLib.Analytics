@@ -15,6 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-      <PackageReference Include="AspectInjector" Version="2.7.4" />
+      <PackageReference Include="AspectInjector" Version="2.8.0" />
   </ItemGroup>
 </Project>
