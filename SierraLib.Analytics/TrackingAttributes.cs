@@ -162,25 +162,25 @@ namespace SierraLib.Analytics
         /// <summary>
         /// Overridden in a derived class to customize how the exception is reported.
         /// </summary>
-        /// <param name="request">The <see cref="IRestRequest"/> responsible for reporting the exception.</param>
+        /// <param name="request">The <see cref="RestRequest"/> responsible for reporting the exception.</param>
         /// <param name="method">The method within which the exception was thrown.</param>
         /// <param name="parameters">The parameters which were passed to the method.</param>
         /// <param name="ex">The <see cref="Exception"/> which was thrown.</param>
-        protected virtual void PreProcessRequest(IRestRequest request, MethodBase method, object[] parameters, Exception ex)
+        protected virtual void PreProcessRequest(RestRequest request, MethodBase method, object[] parameters, Exception ex)
         {
 
         }
 
         private class CallbackTrackingModule : ITrackingModule
         {
-            private readonly Action<IRestRequest> preProcess;
+            private readonly Action<RestRequest> preProcess;
 
-            public CallbackTrackingModule(Action<IRestRequest> preProcess)
+            public CallbackTrackingModule(Action<RestRequest> preProcess)
             {
                 this.preProcess = preProcess;
             }
 
-            public void PreProcess(IRestRequest request)
+            public void PreProcess(RestRequest request)
             {
                 this.preProcess?.Invoke(request);
             }

@@ -106,7 +106,7 @@ namespace SierraLib.Analytics.Test
             var request = new RestRequest()
             {
                 Resource = "/collect",
-                Method = Method.POST
+                Method = Method.Post
             };
             request.AddParameter("q", "Test", ParameterType.GetOrPost);
             request.AddParameter("r", "Yargh!", ParameterType.GetOrPost);
@@ -127,13 +127,12 @@ namespace SierraLib.Analytics.Test
             Assert.AreEqual(pendingRequest.Engine, deserialized.Engine);
 
             Assert.AreEqual(pendingRequest.Request.Parameters.Count, request.Parameters.Count);
-            for (int i = 0; i < pendingRequest.Request.Parameters.Count; i++)
+            foreach (var parameter in request.Parameters)
             {
-                var got = pendingRequest.Request.Parameters[i];
-                var expected = request.Parameters[i];
-                Assert.AreEqual(expected.Type, got.Type);
-                Assert.AreEqual(expected.Name, got.Name);
-                Assert.AreEqual(expected.Value, got.Value);
+                var expected = pendingRequest.Request.Parameters.TryFind(parameter.Name);
+                Assert.IsNotNull(expected, "the parameter '{0}' should be present", parameter.Name);
+                Assert.AreEqual(expected.Type, parameter.Type);
+                Assert.AreEqual(expected.Value, parameter.Value);
             }
         }
 

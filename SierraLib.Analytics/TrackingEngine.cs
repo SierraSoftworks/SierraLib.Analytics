@@ -133,7 +133,10 @@ namespace SierraLib.Analytics
             {
                 _UserAgent = value;
                 if (_restClient != null)
-                    _restClient.UserAgent = _UserAgent;
+                {
+                    _restClient.DefaultParameters.RemoveParameter("User-Agent");
+                    _restClient.AddDefaultParameter(new HeaderParameter("User-Agent", _UserAgent));
+                }
             }
         }
 
@@ -252,7 +255,7 @@ namespace SierraLib.Analytics
                 OnRequestTransmitted(request);
         }
 
-        private void OnRequestFailed(PreparedTrackingRequest request, IRestResponse response)
+        private void OnRequestFailed(PreparedTrackingRequest request, RestResponse response)
         {
             if (response.ResponseStatus != ResponseStatus.Completed || response.StatusCode != System.Net.HttpStatusCode.OK)
             {

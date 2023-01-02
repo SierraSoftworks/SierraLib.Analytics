@@ -44,7 +44,7 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class StartSessionAttribute : TrackingModuleAttributeBase
 	{
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("sc", "start");
 		}
@@ -55,7 +55,7 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class EndSessionAttribute : TrackingModuleAttributeBase
 	{
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("sc", "end");
 		}
@@ -85,9 +85,9 @@ namespace SierraLib.Analytics.Google
 		{ get; set; }
 
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameter("dt", Title);
+			request.AddParameterExclusive("dt", Title);
 		}
 	}
 
@@ -111,9 +111,9 @@ namespace SierraLib.Analytics.Google
 		{ get; set; }
 
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameter("dp", Path);
+			request.AddParameterExclusive("dp", Path);
 		}
 	}
 
@@ -137,9 +137,9 @@ namespace SierraLib.Analytics.Google
 		{ get; set; }
 
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameter("cd", Description);
+			request.AddParameterExclusive("cd", Description);
 		}
 	}
 
@@ -167,7 +167,7 @@ namespace SierraLib.Analytics.Google
 		public string Description
 		{ get; set; }
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
 			if (!Description.IsNullOrWhitespace())
 				request.AddParameterExclusive("cd", Description.Truncate(500));
@@ -217,7 +217,7 @@ namespace SierraLib.Analytics.Google
 		public int Value
 		{ get; set; }
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("t", "event");
 
@@ -228,7 +228,7 @@ namespace SierraLib.Analytics.Google
 			if (!string.IsNullOrEmpty(Label))
 				request.AddParameterExclusive("el", Label.Truncate(500));
 			if (Value != 0)
-				request.AddParameterExclusive("ev", Value);
+				request.AddParameterExclusive("ev", Value.ToString());
 		}
 	}
 	
@@ -252,7 +252,7 @@ namespace SierraLib.Analytics.Google
 		public string Path
 		{ get; set; }
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
 			if (!Path.IsNullOrWhitespace())
 				request.AddParameterExclusive("dp", Path.Truncate(2048));
@@ -274,9 +274,9 @@ namespace SierraLib.Analytics.Google
 
 		}
 
-		public override void PreProcess(RestSharp.IRestRequest request)
+		public override void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameterExclusive("ni", 1);
+			request.AddParameterExclusive("ni", "1");
 		}
 	}
  
@@ -291,11 +291,11 @@ namespace SierraLib.Analytics.Google
 	public class TrackOnExceptionAttribute : Analytics.TrackOnExceptionAttribute
 	{
         /// <inheritdoc/>
-        protected override void PreProcessRequest(IRestRequest request, MethodBase method, object[] parameters, Exception ex)
+        protected override void PreProcessRequest(RestRequest request, MethodBase method, object[] parameters, Exception ex)
         {
             request.AddParameterExclusive("t", "exception");
             request.AddParameterExclusive("exd", string.Format("{0}: {1} in {2}.{3}", ex.GetType().Name, ex.Message, ex.TargetSite.DeclaringType.FullName, ex.TargetSite.Name));
-            request.AddParameterExclusive("exf", 1);
+            request.AddParameterExclusive("exf", "1");
 
             request.AddParameterExclusive("cd", string.Format("Stack Trace:\n {0}", ex.StackTrace).Truncate(2048));
 

@@ -12,7 +12,7 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class StartSession : ITrackingModule
 	{
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("sc", "start");
 		}
@@ -23,7 +23,7 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class EndSession : ITrackingModule
 	{
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("sc", "end");
 		}
@@ -52,7 +52,7 @@ namespace SierraLib.Analytics.Google
 		public Uri Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dr", Value.ToString().Truncate(2048));
 		}
@@ -74,7 +74,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 				
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dt", Value.Truncate(1500));
 		}
@@ -99,7 +99,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dh", Value.Truncate(100));
 		}
@@ -124,7 +124,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dp", Value.Truncate(2048));
 		}
@@ -149,7 +149,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dl", Value.Truncate(2048));
 		}
@@ -174,7 +174,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("cd", Value.Truncate(2048));
 		}
@@ -230,7 +230,7 @@ namespace SierraLib.Analytics.Google
 		public string ID
 		{ get; set; }
 				
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			if (!Name.IsNullOrWhitespace())
 				request.AddParameterExclusive("cn", Name.Truncate(100));
@@ -263,7 +263,7 @@ namespace SierraLib.Analytics.Google
 		public string ID
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("gclid", ID);
 		}
@@ -285,7 +285,7 @@ namespace SierraLib.Analytics.Google
 		public string ID
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("dclid", ID);
 		}
@@ -335,7 +335,7 @@ namespace SierraLib.Analytics.Google
 		public bool Fatal
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			var description = "";
 			if (!Source.IsNullOrWhitespace()) description = string.Format("{0}: ", Source);
@@ -343,10 +343,10 @@ namespace SierraLib.Analytics.Google
 
 			request.AddParameterExclusive("t", "exception");
 			request.AddParameterExclusive("exd", description.Truncate(150));
-			request.AddParameterExclusive("exf", Fatal ? 1 : 0);
+			request.AddParameterExclusive("exf", Fatal ? "1" : "0");
 		}
 
-		public void PostProcess(RestSharp.IRestRequest request)
+		public void PostProcess(RestSharp.RestRequest request)
 		{
 			TrackingModuleHelpers.RequiresParameter(this, request, "t", "exception");
 		}
@@ -365,7 +365,7 @@ namespace SierraLib.Analytics.Google
 	/// </remarks>
 	public sealed class AppView : ITrackingModule
 	{
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusiveOrThrow("t", "appview");
 		}
@@ -376,12 +376,12 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class PageView : ITrackingModule, ITrackingPostProcess
 	{
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusiveOrThrow("t", "pageview");
 		}
 
-		public void PostProcess(RestSharp.IRestRequest request)
+		public void PostProcess(RestSharp.RestRequest request)
 		{
 			if (!request.Parameters.Any(x => x.Name == "dp"))
 				throw new InvalidOperationException("GAPageView requests require the GAPath module to be used");
@@ -413,7 +413,7 @@ namespace SierraLib.Analytics.Google
 		public int Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			if (!string.IsNullOrEmpty(Category))
 				request.AddParameterExclusive("ec", Category.Truncate(150));
@@ -422,7 +422,7 @@ namespace SierraLib.Analytics.Google
 			if (!string.IsNullOrEmpty(Label))
 				request.AddParameterExclusive("el", Label.Truncate(500));
 			if (Value != 0)
-				request.AddParameterExclusive("ev", Value);
+				request.AddParameterExclusive("ev", Value.ToString());
 		}
 	}
 
@@ -462,7 +462,7 @@ namespace SierraLib.Analytics.Google
 		public string Target
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("sn", SocialNetwork.Truncate(50));
 			request.AddParameterExclusive("sa", Action.Truncate(50));
@@ -498,14 +498,14 @@ namespace SierraLib.Analytics.Google
         public int Milliseconds
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			if(!Category.IsNullOrEmpty())
 				request.AddParameterExclusive("utc", Category.Truncate(150));
 			if (!Label.IsNullOrEmpty())
 				request.AddParameterExclusive("utl", Label.Truncate(500));
 			request.AddParameterExclusive("utv", Variable.Truncate(500));
-			request.AddParameterExclusive("utt", Milliseconds);
+			request.AddParameterExclusive("utt", Milliseconds.ToString());
 		}
 	}
 
@@ -515,9 +515,9 @@ namespace SierraLib.Analytics.Google
 	/// </summary>
 	public sealed class NonInteractive : ITrackingModule
 	{
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameterExclusive("ni", 1);
+			request.AddParameterExclusive("ni", "1");
 		}
 	}
 
@@ -562,7 +562,7 @@ namespace SierraLib.Analytics.Google
 		public string Value
 		{ get; set; }
 				
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			if(!Value.IsNullOrWhitespace())
 				request.AddParameterExclusiveOrThrow(string.Format("cd{0}", Index), Value.Truncate(150));
@@ -601,9 +601,9 @@ namespace SierraLib.Analytics.Google
 		public int Value
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
-			request.AddParameterExclusiveOrThrow(string.Format("cm{0}", Index), Value);
+			request.AddParameterExclusiveOrThrow(string.Format("cm{0}", Index), Value.ToString());
 		}
 	}
 
@@ -639,7 +639,7 @@ namespace SierraLib.Analytics.Google
 		public int Height
 		{ get; set; }
 				
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusive("vp", string.Format("{0}x{1}", Width, Height));
 		}
@@ -678,15 +678,15 @@ namespace SierraLib.Analytics.Google
 		public string CurrencyCode
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusiveOrThrow("t", "item");
 			request.AddParameterExclusive("ti", TransactionID.Truncate(500));
 			request.AddParameterExclusive("in", Name.Truncate(500));
 			if (Price.HasValue)
-				request.AddParameterExclusive("ip", Price.Value);
+				request.AddParameterExclusive("ip", Price.Value.ToString());
 			if (Quantity.HasValue)
-				request.AddParameterExclusive("iq", Quantity.Value);
+				request.AddParameterExclusive("iq", Quantity.Value.ToString());
 			if (!Code.IsNullOrWhitespace())
 				request.AddParameterExclusive("ic", Code.Truncate(500));
 			if (!Category.IsNullOrWhitespace())
@@ -718,7 +718,7 @@ namespace SierraLib.Analytics.Google
 		public double? Tax
 		{ get; set; }
 
-		public void PreProcess(RestSharp.IRestRequest request)
+		public void PreProcess(RestSharp.RestRequest request)
 		{
 			request.AddParameterExclusiveOrThrow("t", "transaction");
 			request.AddParameterExclusive("ti", TransactionID.Truncate(500));
@@ -726,11 +726,11 @@ namespace SierraLib.Analytics.Google
 			if (!Affiliation.IsNullOrWhitespace())
 				request.AddParameterExclusive("ta", Affiliation.Truncate(500));
 			if (Revenue.HasValue)
-				request.AddParameterExclusive("tr", Revenue.Value);
+				request.AddParameterExclusive("tr", Revenue.Value.ToString());
 			if (Shipping.HasValue)
-				request.AddParameterExclusive("ts", Shipping.Value);
+				request.AddParameterExclusive("ts", Shipping.Value.ToString());
 			if (Tax.HasValue)
-				request.AddParameterExclusive("tt", Tax.Value);
+				request.AddParameterExclusive("tt", Tax.Value.ToString());
 		}
 	}
 

@@ -69,16 +69,19 @@ namespace SierraLib.Analytics.Google
             return TrackingID;
         }
 
-        protected async override Task<Implementation.PreparedTrackingRequest> PrepareRequestAsync(RestSharp.IRestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
+        protected async override Task<Implementation.PreparedTrackingRequest> PrepareRequestAsync(RestSharp.RestRequest request, IEnumerable<Implementation.ITrackingFinalize> finalizationQueue)
         {
             return new PreparedTrackingRequest(this, request, finalizationQueue);
         }
 
-        protected override RestSharp.IRestClient CreateNetworkClient(string userAgent)
+        protected override RestSharp.RestClient CreateNetworkClient(string userAgent)
         {
-            if (Secure)
-                return new RestSharp.RestClient("https://ssl.google-analytics.com/") { UserAgent = userAgent };
-            return new RestSharp.RestClient("http://www.google-analytics.com") { UserAgent = userAgent };
+            var url = Secure ? "https://ssl.google-analytics.com" : "http://www.google-analytics.com";
+            var client = new RestSharp.RestClient(url);
+
+            client.AddDefaultParameter(new RestSharp.HeaderParameter("User-Agent", userAgent));
+
+            return client;
         }
 
         protected async override Task<string> CreateNewClientIDAsync(ITrackingApplication application)
@@ -86,11 +89,11 @@ namespace SierraLib.Analytics.Google
             return Guid.NewGuid().ToString().ToLower();
         }
 
-        protected async override Task PreProcessAsync(RestSharp.IRestRequest request)
+        protected async override Task PreProcessAsync(RestSharp.RestRequest request)
         {
             // Add protocol version
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
-            request.AddParameterExclusive("v", ProtocolVersion);
+            request.AddParameterExclusive("v", ProtocolVersion.ToString());
 
             // Add account tracking ID
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
@@ -99,7 +102,7 @@ namespace SierraLib.Analytics.Google
             // Anonymize IP flag
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
             if (AnonymizeIP)
-                request.AddParameterExclusive("aip", 1);
+                request.AddParameterExclusive("aip", "1");
 
             // Screen resolution
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
@@ -116,16 +119,16 @@ namespace SierraLib.Analytics.Google
             request.AddParameterExclusive("ul", System.Threading.Thread.CurrentThread.CurrentCulture.Name);
         }
 
-        protected async override Task PostProcessAsync(RestSharp.IRestRequest request)
+        protected async override Task PostProcessAsync(RestSharp.RestRequest request)
         {
             // Hit type (default)
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
             request.AddParameterExclusive("t", "appview"); //If we haven't set a type before this point
         }
 
-        protected async override Task<RestSharp.IRestRequest> CreateRequestAsync(ITrackingApplication application)
+        protected async override Task<RestSharp.RestRequest> CreateRequestAsync(ITrackingApplication application)
         {
-            var request = new RestSharp.RestRequest("/collect", RestSharp.Method.POST);
+            var request = new RestSharp.RestRequest("/collect", RestSharp.Method.Post);
 
             // Client ID
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
@@ -133,8 +136,8 @@ namespace SierraLib.Analytics.Google
 
             // Add application name and version parameters to request
             // https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
-            request.AddParameter("an", application.Name.Truncate(150));
-            request.AddParameter("av", application.Version.Truncate(150));
+            request.AddParameterExclusive("an", application.Name.Truncate(150));
+            request.AddParameterExclusive("av", application.Version.Truncate(150));
 
             return request;
         }

@@ -19,7 +19,7 @@ namespace SierraLib.Analytics.Implementation
             Filter = TrackOn.All;
         }
 
-        public abstract void PreProcess(IRestRequest request);
+        public abstract void PreProcess(RestRequest request);
 
         /// <summary>
         /// Gets or sets the types of event which will cause this attribute to be included in the tracked data bundle

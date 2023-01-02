@@ -1,4 +1,4 @@
-﻿using RestSharp;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +9,7 @@ namespace SierraLib.Analytics.Google
     [Serializable]
     public sealed class PreparedTrackingRequest : Imp.PreparedTrackingRequest
     {
-        internal PreparedTrackingRequest(UniversalAnalytics engine, IRestRequest request,
+        internal PreparedTrackingRequest(UniversalAnalytics engine, RestRequest request,
                                         IEnumerable<Imp.ITrackingFinalize> requiredFinalizations)
             : base(engine, request, requiredFinalizations)
         {

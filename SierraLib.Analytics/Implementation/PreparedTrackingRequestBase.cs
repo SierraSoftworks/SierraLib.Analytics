@@ -28,9 +28,9 @@ namespace SierraLib.Analytics.Implementation
         /// finalization on a request object.
         /// </summary>
         /// <param name="engine">The <see cref="TrackingEngine"/> managing the tracking request</param>
-        /// <param name="request">The <see cref="IRestRequest"/> representing the current request</param>
+        /// <param name="request">The <see cref="RestRequest"/> representing the current request</param>
         /// <param name="requiredFinalizations">The <see cref="ITrackingModule"/>s which require finalization of the request before sending</param>
-        public PreparedTrackingRequest(TrackingEngine engine, IRestRequest request, IEnumerable<ITrackingFinalize> requiredFinalizations)
+        public PreparedTrackingRequest(TrackingEngine engine, RestRequest request, IEnumerable<ITrackingFinalize> requiredFinalizations)
         {
             Engine = engine;
             RequestID = Guid.NewGuid();
@@ -58,9 +58,9 @@ namespace SierraLib.Analytics.Implementation
         { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="IRestRequest"/> containing the tracking information
+        /// Gets the <see cref="RestRequest"/> containing the tracking information
         /// </summary>
-        public IRestRequest Request
+        public RestRequest Request
         { get; private set; }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SierraLib.Analytics.Implementation
 
         static readonly JsonSerializer Serializer = new JsonSerializer();
 
-        protected void SerializeRequest(IRestRequest request, SerializationInfo info, StreamingContext context)
+        protected void SerializeRequest(RestRequest request, SerializationInfo info, StreamingContext context)
         {
             using (var sw = new StringWriter())
             {
@@ -92,7 +92,7 @@ namespace SierraLib.Analytics.Implementation
             e.ErrorContext.Handled = true;
         }
 
-        protected IRestRequest DeserializeRequest(SerializationInfo info, StreamingContext context)
+        protected RestRequest DeserializeRequest(SerializationInfo info, StreamingContext context)
         {
             var request = new RestRequest();
 

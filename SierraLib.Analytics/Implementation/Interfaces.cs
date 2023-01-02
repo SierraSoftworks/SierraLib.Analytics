@@ -31,8 +31,8 @@ namespace SierraLib.Analytics.Implementation
         /// Called by the <see cref="TrackingEngine"/> to enable the tracking
         /// module to perform pre-processing on a request.
         /// </summary>
-        /// <param name="request">The <see cref="IRestRequest"/> which is being sent.</param>
-        void PreProcess(IRestRequest request);
+        /// <param name="request">The <see cref="RestRequest"/> which is being sent.</param>
+        void PreProcess(RestRequest request);
     }
 
     /// <summary>
@@ -51,8 +51,8 @@ namespace SierraLib.Analytics.Implementation
         /// module to perform post-processing on a request before it is enqueued
         /// for sending.
         /// </summary>
-        /// <param name="request">The <see cref="IRestRequest"/> which is being enqueued.</param>
-        void PostProcess(IRestRequest request);
+        /// <param name="request">The <see cref="RestRequest"/> which is being enqueued.</param>
+        void PostProcess(RestRequest request);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ namespace SierraLib.Analytics.Implementation
         /// module to perform some finalization on a request just prior to
         /// sending.
         /// </summary>
-        /// <param name="request">The <see cref="IRestRequest"/> which is being sent.</param>
-        void FinalizeRequest(IRestRequest request);
+        /// <param name="request">The <see cref="RestRequest"/> which is being sent.</param>
+        void FinalizeRequest(RestRequest request);
     }
 }

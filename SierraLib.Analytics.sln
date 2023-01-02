@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33020.496
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SierraLib.Analytics", "SierraLib.Analytics\SierraLib.Analytics.csproj", "{165406EB-597E-4C23-A619-70DC1177F596}"
 EndProject
@@ -17,9 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{165406EB-597E-4C23-A619-70DC1177F596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +55,11 @@ Global
 		{3D0C3356-5163-46B6-91CF-6E3CD0FE54DD}.Release|x64.Build.0 = Release|Any CPU
 		{3D0C3356-5163-46B6-91CF-6E3CD0FE54DD}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D0C3356-5163-46B6-91CF-6E3CD0FE54DD}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B3BE8C1A-389B-4038-8ED6-7A32AC672312}
 	EndGlobalSection
 EndGlobal

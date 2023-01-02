@@ -12,12 +12,12 @@ namespace SierraLib.Analytics
 
         #region Network
 
-        private IRestClient _restClient = null;
+        private RestClient _restClient = null;
         /// <summary>
-        /// Gets the <see cref="IRestClient"/> used to send requests
+        /// Gets the <see cref="RestClient"/> used to send requests
         /// to the tracking server.
         /// </summary>
-        protected IRestClient NetworkClient
+        protected RestClient NetworkClient
         {
             get
             {
@@ -31,16 +31,16 @@ namespace SierraLib.Analytics
         }
 
         /// <summary>
-        /// Creates a <see cref="IRestClient"/> which will be used
+        /// Creates a <see cref="RestClient"/> which will be used
         /// by the <see cref="TrackingManager"/> for tracking packet
         /// submissions.
         /// </summary>
         /// <param name="userAgent">The default UserAgent string to use for the client</param>
         /// <returns>
-        /// Returns a <see cref="IRestClient"/> configured for sending
+        /// Returns a <see cref="RestClient"/> configured for sending
         /// tracking data for this <see cref="TrackingEngine"/> instance.
         /// </returns>
-        protected abstract IRestClient CreateNetworkClient(string userAgent);
+        protected abstract RestClient CreateNetworkClient(string userAgent);
 
         /// <summary>
         /// Requests that a new <see cref="NetworkClient"/> is created for this
@@ -56,19 +56,19 @@ namespace SierraLib.Analytics
         #region Request Preperation
 
         /// <summary>
-        /// Creates a <see cref="IRestRequest"/> for the given application context
+        /// Creates a <see cref="RestRequest"/> for the given application context
         /// which will be used to generate the tracking request for the engine.
         /// </summary>
         /// <param name="application">The application context which generated the tracking request</param>
         /// <returns></returns>
-        protected abstract Task<IRestRequest> CreateRequestAsync(ITrackingApplication application);
+        protected abstract Task<RestRequest> CreateRequestAsync(ITrackingApplication application);
 
         /// <summary>
         /// Allows the engine to pre-process a tracking request before it is handed
         /// off to the <see cref="ITrackingModule"/>s for population.
         /// </summary>
         /// <param name="request">The request being used for the current tracking hit</param>
-        protected async virtual Task PreProcessAsync(IRestRequest request)
+        protected async virtual Task PreProcessAsync(RestRequest request)
         {
             await Task.Yield();
         }
@@ -78,7 +78,7 @@ namespace SierraLib.Analytics
         /// populated by all <see cref="ITrackingModule"/>s.
         /// </summary>
         /// <param name="request">The request being used for the current tracking hit</param>
-		protected async virtual Task PostProcessAsync(IRestRequest request)
+		protected async virtual Task PostProcessAsync(RestRequest request)
         {
             await Task.Yield();
         }
@@ -90,7 +90,7 @@ namespace SierraLib.Analytics
         /// <param name="request">The populated and post-processed request waiting to be sent</param>
         /// <param name="finalizationQueue">A number of modules which require the ability to finalize a request prior to transmission</param>
         /// <returns>Returns a <see cref="PreparedTrackingRequest"/> object tailored to the engine's specific requirements</returns>
-		protected abstract Task<PreparedTrackingRequest> PrepareRequestAsync(IRestRequest request, IEnumerable<ITrackingFinalize> finalizationQueue);
+		protected abstract Task<PreparedTrackingRequest> PrepareRequestAsync(RestRequest request, IEnumerable<ITrackingFinalize> finalizationQueue);
 
         #endregion
 
