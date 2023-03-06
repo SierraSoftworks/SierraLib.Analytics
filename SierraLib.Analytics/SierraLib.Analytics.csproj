@@ -27,7 +27,7 @@
   <ItemGroup>
     <PackageReference Include="akavache" Version="9.1.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="reactiveui" Version="18.4.22" />
+    <PackageReference Include="reactiveui" Version="18.4.25" />
     <PackageReference Include="RestSharp" Version="108.0.3" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
