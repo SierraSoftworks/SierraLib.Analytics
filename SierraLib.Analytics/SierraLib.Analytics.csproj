@@ -28,7 +28,7 @@
     <PackageReference Include="akavache" Version="10.1.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="reactiveui" Version="20.1.63" />
-    <PackageReference Include="RestSharp" Version="109.0.1" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="AspectInjector" Version="2.8.2" />
